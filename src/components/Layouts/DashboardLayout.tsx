@@ -71,7 +71,7 @@ const Mobile = () => {
                 background: t.colors.darkGray[1],
               },
             },
-            '& [data-active]': {
+            '& [dataActive]': {
               background: t.colors.darkGray[1],
             },
           })}

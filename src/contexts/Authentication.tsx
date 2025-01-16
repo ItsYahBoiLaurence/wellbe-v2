@@ -4,14 +4,23 @@ import { User, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 
-type AuthContextType = {
+
+interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 };
 
 // Create context with a default value of `undefined`
-export const AuthenticationContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthenticationContext = createContext<AuthContextType>({
+    user: null,
+    login: async () => {
+        throw new Error('login method not implemented'); // Placeholder
+    },
+    logout: async () => {
+        throw new Error('logout method not implemented'); // Placeholder
+    },
+});
 
 const EXCLUDED_PATHS = [
     "/sign-in",
@@ -19,7 +28,7 @@ const EXCLUDED_PATHS = [
     "/forgot-password",
     "/reset-password",
     "/otp",
-    "forget-password",
+    "/forget-password",
 ];
 
 export const Authentication = ({ children }: PropsWithChildren<{}>) => {

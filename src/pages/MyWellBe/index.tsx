@@ -12,8 +12,10 @@ import { OutlineButton, PrimaryButton } from '../../components/Buttons/Buttons';
 import CalendarTodayIcon from '../../components/icons/CalendarTodayIcon';
 import ThumbDownIcon from '../../components/icons/ThumbDownIcon';
 import ThumbUpIcon from '../../components/icons/ThumbUpIcon';
-import { useEffect, useState } from 'react';
+
+import { useContext, useEffect, useState } from 'react';
 import api from '../../api/api';
+import { AuthenticationContext } from '../../contexts/Authentication'
 
 type CardProps = BoxProps & ElementProps<'div', keyof BoxProps>;
 
@@ -32,27 +34,52 @@ export const Card = (props: CardProps) => (
   />
 );
 
-const MyWellBePage = () => {
-  // const { currentUser } = useAuth();
-  // const greetingMessage = currentUser?.firstName
-  //   ? `Great job, ${currentUser.firstName}!`
-  //   : 'Great job!';
+interface AdviceMessage {
+  dateGenerate: string;
+  advise: string;
+  feedback: string;
+}
 
-  const [tip, setTip] = useState("");
+interface ResponseMessage {
+  adviceMessage: AdviceMessage;
+}
+
+const MyWellBePage = () => {
+  const authContext = useContext(AuthenticationContext);
+
+  if (!authContext) {
+    throw new Error("AuthenticationContext must be used within its provider.");
+  }
+
+  const { user } = authContext;
+  const [tip, setTip] = useState<string>("");
+
+  const company: string = "Sample Company";
 
   useEffect(() => {
-    const getDailyTip = async () => {
-
+    const getLatestAdvice = async (email: string, company: string): Promise<void> => {
       try {
-        await api.get('/engine/get-tip')
-          .then((response) => setTip(response.data))
-      } catch (error) {
-        console.log(error)
-      }
-    }
+        // Prepare the email and company values to be passed as query parameters
+        const response = await api.get<ResponseMessage>("/api/engine/latestAdvise", {
+          params: { email, company },  // Send email and company as query params
+        });
 
-    getDailyTip();
-  }, [tip])
+        // Extract the advice text from the response and set it in the state
+        const adviceText = response.data.message.advise || "No advice available.";
+        console.log(response.data)
+        setTip(adviceText);  // Update the state with the advice
+      } catch (error) {
+        console.error("Error fetching advice:", error);
+        setTip("Error fetching advice.");  // Optionally set a fallback message
+      }
+    };
+    console.log(user?.email)
+    // Check if user email is available before making the request
+    if (user?.email) {
+      getLatestAdvice(user.email, company);
+    }
+  }, [user?.email, company]); // Re-run the effect when user email or company changes
+
 
 
   return (
@@ -90,17 +117,6 @@ const MyWellBePage = () => {
       {/* TODO: use real data */}
       <Card mt={24}>
         <Text>
-          {/* <strong>Your results in the behavioral indicators is average.</strong>{' '}
-          This suggests that your level of behavioral manifestations is within
-          the normal range of the population. <br />
-          <br />
-          You are close to the population average in terms of your enthusiasm
-          and alertness in daily functioning. <br />
-          <br />
-          Occassionally you may suffer from feelings of preooccupation and
-          inattention, but you know that you can accomplish tasks once you set
-          your mind on them. You are able to maintain your physical appearance
-          and your difficulties do not interfere with your daily functioning. */}
           {tip ? tip : "Loading"}
         </Text>
       </Card>

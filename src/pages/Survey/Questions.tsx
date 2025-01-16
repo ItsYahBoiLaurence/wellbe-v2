@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Box, Container, Progress, Button, Text, Card, Group } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import api from '../../api/api';
-
+import { AuthenticationContext } from '../../contexts/Authentication';
+import axios from 'axios'
 const choices = [
     { label: 'Strongly Disagree', value: 1 },
     { label: 'Disagree', value: 2 },
@@ -26,66 +27,141 @@ type SurveyResponses = {
 };
 
 type SurveyQuestion = {
-    id: string;
-    text: string;
+    indexQuestion: string; // Added indexQuestion to the type
+    question: string; // Renamed question to match your data structure
 };
 
-const SurveyComponent = ({ changeStateFunction }: SurveyComponentProps) => {
+
+type ApiResponse = {
+    response: {
+        questions: SurveyQuestion[];
+    };
+    status: number;
+    message: string;
+    name: string;
+};
+
+
+
+interface Answer {
+    indexQuestion: string;
+    answer: number;
+}
+
+interface Answers {
+    answers: Answer[];
+}
+
+interface ResponseMessage {
+    message: string;
+}
+
+
+
+const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) => {
+    const authContext = useContext(AuthenticationContext);
+    const { user } = authContext;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [progressValue, setProgressValue] = useState(0);
     const [responses, setResponses] = useState<SurveyResponses>({});
     const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-    const [dummySurvey, setDummySurvey] = useState<{ [key: string]: string }>({});
+    const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
 
-    const carouselRef = useRef<any>(null); // Create a reference for the Carousel component
+    const [carousel, setCarousel] = useState(null)
 
-    const surveyQuestions: SurveyQuestion[] = Object.entries(dummySurvey).map(([id, text]) => ({
-        id,
-        text,
-    }));
-
-    useEffect(() => {
-        if (surveyQuestions.length > 0) {
-            const progress = ((currentSlide + 1) / surveyQuestions.length) * 100;
-            setProgressValue(progress);
-            setSelectedChoice(responses[surveyQuestions[currentSlide]?.id] || null);
+    const generateQuestions = async (
+        email: string,
+        company: string
+    ): Promise<SurveyQuestion[] | undefined> => {
+        try {
+            const params = { email, company };
+            const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
+            setSurveyQuestions(response.data.response.questions)
+            console.log(response.data.response.questions)
+            return response.data.response.questions
+        } catch (error) {
+            console.error('Error generating questions:', error);
+            throw error;
         }
-    }, [currentSlide, responses]);
+    };
+
+    const submitAnswers = async (email: string, payload: Answers): Promise<ResponseMessage | undefined> => {
+        try {
+            const response = await api.post('/api/engine/submitAnswers', payload, {
+                params: {
+                    email: email
+                }
+            });
+            if (response.status === 200) {
+                return response.data as ResponseMessage;
+            } else {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const params = { email: 'andrew@gmail.com' };
-                const response = await api.get('/engine/generateQuestions', { params });
-                console.log('Fetched Data:', response.data);
-                setDummySurvey(response.data);
+                if (user) {
+                    const questions = await generateQuestions("admin@ourwebtesting.xyz", 'Sample Company');
+                    if (questions) {
+                        setSurveyQuestions(questions);
+                    }
+                }
+
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching questions:', error);
             }
         };
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (surveyQuestions.length > 0) {
+            const progress = ((currentSlide + 1) / surveyQuestions.length) * 100;
+            setProgressValue(progress);
+            setSelectedChoice(responses[surveyQuestions[currentSlide]?.indexQuestion] || null);
+        }
+    }, [currentSlide, responses, surveyQuestions]);
+
     const handleChoiceClicked = (value: number) => {
         setResponses((prev) => ({
             ...prev,
-            [surveyQuestions[currentSlide].id]: value,
+            [surveyQuestions[currentSlide].indexQuestion]: value,
         }));
         setSelectedChoice(value);
-        if (carouselRef.current) carouselRef.current.scrollNext(); // Access Embla API to scroll
+        if (carousel) carousel.scrollNext(); // Access Embla API to scroll
     };
 
-    const handleSubmit = () => {
-        console.log('Survey Completed:', responses);
-        const data = {
-            email: 'andrew@gmail.com',
-            ...responses,
+    const handleSubmit = async () => {
+        const data: Answers = {
+            answers: Object.keys(responses).map((questionId) => {
+                // Format the index as needed. Assuming questionId is already in the correct format.
+                const formattedIndex = questionId.replace('_', '_'); // You can adjust this if necessary
+
+                return {
+                    indexQuestion: formattedIndex,
+                    answer: responses[questionId],
+                };
+            }),
         };
+
+        console.log(data);
+
+        // Email parameter
+        const emailS = user?.email;
+        console.log(emailS)
         try {
-            api.post('engine/recordAnswer', data).then((res) => console.log(res));
+            await submitAnswers(user?.email as string, data).then((response) => console.log(response))
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
+
+        // Changing the state once the survey is completed
         changeStateFunction(SurveyStatus.COMPLETED);
     };
 
@@ -107,7 +183,8 @@ const SurveyComponent = ({ changeStateFunction }: SurveyComponentProps) => {
 
                 {surveyQuestions.length > 0 ? (
                     <Carousel
-                        ref={carouselRef} // Attach the ref here
+                        getEmblaApi={setCarousel}
+                        // Attach the ref here
                         withControls={false}
                         onSlideChange={(index) => setCurrentSlide(index)}
                         slideGap={32}
@@ -120,7 +197,7 @@ const SurveyComponent = ({ changeStateFunction }: SurveyComponentProps) => {
                         }}
                     >
                         {surveyQuestions.map((question, index) => (
-                            <Carousel.Slide key={question.id}>
+                            <Carousel.Slide key={question.indexQuestion}> {/* Use indexQuestion as key */}
                                 <Card
                                     shadow="md"
                                     radius="lg"
@@ -134,12 +211,12 @@ const SurveyComponent = ({ changeStateFunction }: SurveyComponentProps) => {
                                     }}
                                 >
                                     <Text size="xl" mb="md">
-                                        {question.text}
+                                        {question.question}
                                     </Text>
                                     <Group style={{ marginTop: 24 }}>
                                         {choices.map((choice) => (
                                             <Button
-                                                key={choice.value}
+                                                key={`${choice.value}-${question.indexQuestion}`}
                                                 variant={selectedChoice === choice.value ? 'filled' : 'outline'}
                                                 color={selectedChoice === choice.value ? 'blue' : 'gray'}
                                                 onClick={() => handleChoiceClicked(choice.value)}
@@ -164,6 +241,7 @@ const SurveyComponent = ({ changeStateFunction }: SurveyComponentProps) => {
                 ) : (
                     <Text color="red">No questions available to display.</Text>
                 )}
+
             </Container>
 
             <Box
