@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SurveyCompleted from './Completed';
 import SurveyQuestions from './Questions';
 import SurveyStartPage from './Start';
+import { Box, PinInput } from '@mantine/core';
 
 enum SurveyStatus {
   START = 'survey-start',
@@ -17,7 +18,7 @@ const SurveyPage = () => {
   };
 
   return (
-    <div>
+    <Box style={{ heigh: 100, backgroundColor: 'pink' }}>
       {surveyStatus === SurveyStatus.START && (
         <SurveyStartPage changeStateFunction={handleChange} status={surveyStatus} />
       )}
@@ -27,7 +28,9 @@ const SurveyPage = () => {
       {surveyStatus === SurveyStatus.COMPLETED && (
         <SurveyCompleted />
       )}
-    </div>
+    </Box>
+
+
   );
 };
 

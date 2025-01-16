@@ -4,6 +4,7 @@ import {
   Container,
   ElementProps,
   Image,
+  Skeleton,
   Text,
   Title,
 } from '@mantine/core';
@@ -113,11 +114,24 @@ const MyWellBePage = () => {
         Hello there!
       </Title>
       <Text mt={16}>Here’s your Wellbe result for today</Text>
-
-      {/* TODO: use real data */}
       <Card mt={24}>
         <Text>
-          {tip ? tip : "Loading"}
+          {tip ? tip : (
+            <>
+              <Skeleton height={8} mt={6} radius="xl" width={'20%'} />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} width={'60%'} radius="xl" />
+              <Skeleton height={8} mt={6} width={'80%'} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} width={'70%'} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+              <Skeleton height={8} mt={6} radius="xl" />
+
+            </>
+          )}
         </Text>
       </Card>
 

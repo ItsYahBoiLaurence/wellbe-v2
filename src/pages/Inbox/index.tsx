@@ -49,7 +49,7 @@ const messages = [
 
 const InboxPage = () => {
   return (
-    <Container fluid style={{ margin: "0px" }}>
+    <Container fluid style={{ margin: "0px", overflow: "auto" }}>
       <Text size="xl" mb="md">
         Inbox
       </Text>

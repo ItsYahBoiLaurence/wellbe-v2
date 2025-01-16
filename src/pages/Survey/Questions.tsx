@@ -3,7 +3,11 @@ import { Box, Container, Progress, Button, Text, Card, Group } from '@mantine/co
 import { Carousel } from '@mantine/carousel';
 import api from '../../api/api';
 import { AuthenticationContext } from '../../contexts/Authentication';
-import axios from 'axios'
+import { PageHeader } from '../../components/PageHeader';
+import { Link } from 'react-router-dom';
+import { PrimaryIconButton } from '../../components/IconButton';
+import { IconChevronLeft } from '@tabler/icons-react';
+
 const choices = [
     { label: 'Strongly Disagree', value: 1 },
     { label: 'Disagree', value: 2 },
@@ -61,6 +65,7 @@ interface ResponseMessage {
 const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) => {
     const authContext = useContext(AuthenticationContext);
     const { user } = authContext;
+    const currentUser = user?.email as string
     const [currentSlide, setCurrentSlide] = useState(0);
     const [progressValue, setProgressValue] = useState(0);
     const [responses, setResponses] = useState<SurveyResponses>({});
@@ -69,16 +74,20 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
 
     const [carousel, setCarousel] = useState(null)
 
-    const generateQuestions = async (
-        email: string,
-        company: string
-    ): Promise<SurveyQuestion[] | undefined> => {
+
+
+
+    const generateQuestions = async (email: string, company: string) => {
         try {
             const params = { email, company };
             const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
-            setSurveyQuestions(response.data.response.questions)
-            console.log(response.data.response.questions)
-            return response.data.response.questions
+            console.log(response.data)
+            if (response.data.message) {
+
+            }
+            // setSurveyQuestions(response.data.response.questions)
+            // console.log(response.data.response.questions)
+            return response.data/*.response.questions*/
         } catch (error) {
             console.error('Error generating questions:', error);
             throw error;
@@ -106,13 +115,11 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (user) {
-                    const questions = await generateQuestions("admin@ourwebtesting.xyz", 'Sample Company');
-                    if (questions) {
-                        setSurveyQuestions(questions);
-                    }
+                const questions = await generateQuestions(currentUser, 'Sample Company');
+                console.log(questions)
+                if (questions) {
+                    setSurveyQuestions(questions);
                 }
-
             } catch (error) {
                 console.error('Error fetching questions:', error);
             }
@@ -156,7 +163,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         const emailS = user?.email;
         console.log(emailS)
         try {
-            await submitAnswers(user?.email as string, data).then((response) => console.log(response))
+            await submitAnswers(currentUser, data).then((response) => console.log(response))
         } catch (error) {
             console.error(error);
         }
@@ -166,7 +173,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     };
 
     return (
-        <Box style={{ height: '100%', paddingTop: 24, paddingBottom: 24 }}>
+        <Box style={{ height: '100%', paddingTop: 24, paddingBottom: 24, backgroundColor: 'blue' }}>
             <Container
                 style={{
                     display: 'flex',
@@ -176,6 +183,16 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                     height: '100%',
                 }}
             >
+                <PageHeader
+                    style={{ paddingTop: 24, paddingBottom: 32 }}
+                    actionButton={
+                        <Link to="/">
+                            <PrimaryIconButton>
+                                <IconChevronLeft />
+                            </PrimaryIconButton>
+                        </Link>
+                    }
+                />
                 <Text style={{ fontSize: '32px', marginBottom: '32px' }}>Questions</Text>
                 <Box style={{ marginBottom: 32 }}>
                     <Progress value={progressValue} />
@@ -218,7 +235,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                                             <Button
                                                 key={`${choice.value}-${question.indexQuestion}`}
                                                 variant={selectedChoice === choice.value ? 'filled' : 'outline'}
-                                                color={selectedChoice === choice.value ? 'blue' : 'gray'}
+                                                color={selectedChoice === choice.value ? '#6E51FF' : 'gray'}
                                                 onClick={() => handleChoiceClicked(choice.value)}
                                             >
                                                 {choice.label}
@@ -239,7 +256,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                         ))}
                     </Carousel>
                 ) : (
-                    <Text color="red">No questions available to display.</Text>
+                    <Text>There are no questions available!</Text>
                 )}
 
             </Container>
