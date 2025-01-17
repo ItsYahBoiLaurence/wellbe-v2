@@ -3,14 +3,12 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthenticationContext } from '../../contexts/Authentication';
 import api from '../../api/api';
 import { IconChevronRight } from '@tabler/icons-react';
-import { useDisclosure } from '@mantine/hooks';
 import { modals } from "@mantine/modals"
 
 
 const ProfilePage = () => {
 
   const { user, logout } = useContext(AuthenticationContext)
-  const [opened, { open, close }] = useDisclosure(false);
 
   const [userProfile, setUserProfile] = useState({})
   const [userImage, setUserImage] = useState("")
@@ -40,7 +38,7 @@ const ProfilePage = () => {
       ),
       labels: { confirm: 'Confirm', cancel: "Cancel" },
       confirmProps: { color: 'red' },
-      onCancel: () => console.log('Cancel'),
+      onCancel: () => { },
       onConfirm: () => logout(),
     });
   useEffect(() => { fetchUserProfile(user?.email as string, "Sample Company") }, [])
@@ -53,10 +51,6 @@ const ProfilePage = () => {
   }, [userProfile])
   return (
     <Container py={24}>
-      <Modal opened={opened} onClose={close} centered>
-        <Text style={{ textAlign: 'center' }}>Are you sure you want to Logout?</Text>
-        <Button variant="filled" size="xs">Button</Button>
-      </Modal>
       <Box>
         <Avatar
           size={80}
