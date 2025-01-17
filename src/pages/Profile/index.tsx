@@ -91,7 +91,7 @@ const ProfilePage = () => {
         <Paper shadow="xs" withBorder p="md">
           <Flex justify={'space-between'}>
             <Text>Company</Text>
-            <Text>{userProfile.company}</Text>
+            <Text>{userProfile.Company}</Text>
           </Flex>
         </Paper>
         <Paper shadow="xs" withBorder p="md" onClick={openModal} style={{ cursor: 'pointer' }}>

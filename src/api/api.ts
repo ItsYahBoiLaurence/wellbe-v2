@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: 'https://wellbe-api-employee.onrender.com/',
+    baseURL: 'https://wellbe-staging-employee-qiwsg.ondigitalocean.app/',
     // withCredentials: true,  // Uncomment this if you want to send cookies with requests
     headers: {
         'Content-Type': 'application/json', // Ensure that we are sending JSON data
