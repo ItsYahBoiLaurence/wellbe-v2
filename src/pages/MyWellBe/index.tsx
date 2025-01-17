@@ -67,14 +67,12 @@ const MyWellBePage = () => {
 
         // Extract the advice text from the response and set it in the state
         const adviceText = response.data.message.advise || "No advice available.";
-        console.log(response.data)
         setTip(adviceText);  // Update the state with the advice
       } catch (error) {
         console.error("Error fetching advice:", error);
         setTip("Error fetching advice.");  // Optionally set a fallback message
       }
     };
-    console.log(user?.email)
     // Check if user email is available before making the request
     if (user?.email) {
       getLatestAdvice(user.email, company);

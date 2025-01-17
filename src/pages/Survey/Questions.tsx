@@ -83,13 +83,10 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         try {
             const params = { email, company };
             const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
-            console.log(response.data)
             if (response.data.message) {
 
             }
-            // setSurveyQuestions(response.data.response.questions)
-            // console.log(response.data.response.questions)
-            return response.data/*.response.questions*/
+            return response.data
         } catch (error) {
             console.error('Error generating questions:', error);
             throw error;
@@ -117,12 +114,14 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true)
                 const questions = await generateQuestions(currentUser, 'Sample Company');
-                console.log(questions)
+                setIsLoading(false)
+                console.log(questions.message)
                 if (questions) {
                     setSurveyQuestions(questions.response.questions);
                 }
-                console.log(surveyQuestions.response.questions)
+
             } catch (error) {
                 console.error('Error fetching questions:', error);
             }
@@ -159,21 +158,15 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 };
             }),
         };
-
-        console.log(data);
-
         // Email parameter
-        const emailS = user?.email;
-        console.log(emailS)
         try {
             setIsLoading(true)
-            await submitAnswers(currentUser, data).then((response) => console.log(response))
+            await submitAnswers(currentUser, data)
+            setIsLoading(false)
         } catch (error) {
             console.error(error);
         }
 
-        // Changing the state once the survey is completed
-        setIsLoading(false)
         changeStateFunction(SurveyStatus.COMPLETED);
     };
 
@@ -244,7 +237,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                                     </Text>
                                     <Flex
                                         justify={'center'}
-                                        columnGap="xl"
+                                        columnGap="md"
                                         rowGap='md'
                                         wrap="wrap"
                                         style={{ marginTop: 20 }}>

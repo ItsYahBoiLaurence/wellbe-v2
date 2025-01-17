@@ -93,7 +93,7 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                     <Grid style={{ width: '100%' }}>
                         <Grid.Col span={6}>
                             <Text style={{ textAlign: 'center', fontWeight: 700 }}>
-                                4 Questions
+                                5 Questions
                             </Text>
                             <Text style={{ textAlign: 'center' }}>Questions</Text>
                         </Grid.Col>
