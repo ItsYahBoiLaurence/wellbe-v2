@@ -29,6 +29,7 @@ const EXCLUDED_PATHS = [
     "/reset-password",
     "/otp",
     "/forget-password",
+    '/get-started',
 ];
 
 export const Authentication = ({ children }: PropsWithChildren<{}>) => {
@@ -61,7 +62,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     // Redirect to sign-in if user is not logged in and accessing restricted paths
     useEffect(() => {
         if (!user && !EXCLUDED_PATHS.includes(location.pathname)) {
-            navigate("/sign-in");
+            navigate("/get-started");
         }
     }, [user, location.pathname, navigate]);
 

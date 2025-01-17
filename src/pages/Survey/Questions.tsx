@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-import { Box, Container, Progress, Button, Text, Card, Group } from '@mantine/core';
+import { Box, Container, Progress, Button, Text, Card, LoadingOverlay, Flex, Paper } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import api from '../../api/api';
 import { AuthenticationContext } from '../../contexts/Authentication';
@@ -8,11 +8,12 @@ import { Link } from 'react-router-dom';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { IconChevronLeft } from '@tabler/icons-react';
 
+
 const choices = [
-    { label: 'Strongly Disagree', value: 1 },
-    { label: 'Disagree', value: 2 },
-    { label: 'Agree', value: 3 },
     { label: 'Strongly Agree', value: 4 },
+    { label: 'Agree', value: 3 },
+    { label: 'Disagree', value: 2 },
+    { label: 'Strongly Disagree', value: 1 },
 ];
 
 enum SurveyStatus {
@@ -71,6 +72,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     const [responses, setResponses] = useState<SurveyResponses>({});
     const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
     const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
+    const [isLoading, setIsLoading] = useState(false)
 
     const [carousel, setCarousel] = useState(null)
 
@@ -101,7 +103,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                     email: email
                 }
             });
-            if (response.status === 200) {
+            if (response.status === 201) {
                 return response.data as ResponseMessage;
             } else {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -118,8 +120,9 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 const questions = await generateQuestions(currentUser, 'Sample Company');
                 console.log(questions)
                 if (questions) {
-                    setSurveyQuestions(questions);
+                    setSurveyQuestions(questions.response.questions);
                 }
+                console.log(surveyQuestions.response.questions)
             } catch (error) {
                 console.error('Error fetching questions:', error);
             }
@@ -163,17 +166,25 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         const emailS = user?.email;
         console.log(emailS)
         try {
+            setIsLoading(true)
             await submitAnswers(currentUser, data).then((response) => console.log(response))
         } catch (error) {
             console.error(error);
         }
 
         // Changing the state once the survey is completed
+        setIsLoading(false)
         changeStateFunction(SurveyStatus.COMPLETED);
     };
 
     return (
-        <Box style={{ height: '100%', paddingTop: 24, paddingBottom: 24 }}>
+        <Box pos="relative" style={{ height: '100%', paddingTop: 24, paddingBottom: 24 }}>
+            <LoadingOverlay
+                visible={isLoading}
+                zIndex={1000}
+                overlayProps={{ radius: 'sm', blur: 2 }}
+                loaderProps={{ color: '#6E51FF', type: 'bars' }}
+            />
             <Container
                 style={{
                     display: 'flex',
@@ -181,6 +192,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                     position: 'relative',
                     zIndex: 50,
                     height: '100%',
+                    backgroundColor: 'white'
                 }}
             >
                 <PageHeader
@@ -197,18 +209,19 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 <Box style={{ marginBottom: 32 }}>
                     <Progress value={progressValue} />
                 </Box>
-
                 {surveyQuestions.length > 0 ? (
                     <Carousel
+
                         getEmblaApi={setCarousel}
                         // Attach the ref here
-                        withControls={false}
+                        withControls={isLoading}
                         onSlideChange={(index) => setCurrentSlide(index)}
                         slideGap={32}
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
                             flexGrow: 1,
+                            height: '100%',
                             '& .mantineCarouselViewport': { height: '100%' },
                             '& .mantineCarouselContainer': { height: '100%' },
                         }}
@@ -216,8 +229,6 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                         {surveyQuestions.map((question, index) => (
                             <Carousel.Slide key={question.indexQuestion}> {/* Use indexQuestion as key */}
                                 <Card
-                                    shadow="md"
-                                    radius="lg"
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -225,25 +236,38 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                                         justifyContent: 'center',
                                         height: '100%',
                                         padding: 32,
+                                        backgroundColor: 'white'
                                     }}
                                 >
-                                    <Text size="xl" mb="md">
+                                    <Text size="xl">
                                         {question.question}
                                     </Text>
-                                    <Group style={{ marginTop: 24 }}>
+                                    <Flex
+                                        justify={'center'}
+                                        columnGap="xl"
+                                        rowGap='md'
+                                        wrap="wrap"
+                                        style={{ marginTop: 20 }}>
                                         {choices.map((choice) => (
                                             <Button
+                                                styles={{}}
+                                                px="xl"
+                                                size='xl'
                                                 key={`${choice.value}-${question.indexQuestion}`}
                                                 variant={selectedChoice === choice.value ? 'filled' : 'outline'}
-                                                color={selectedChoice === choice.value ? '#6E51FF' : 'gray'}
+                                                color='#6E51FF'
                                                 onClick={() => handleChoiceClicked(choice.value)}
                                             >
-                                                {choice.label}
+                                                <Text style={{ fontSize: '16px' }}>
+                                                    {choice.label}
+                                                </Text>
                                             </Button>
                                         ))}
-                                    </Group>
+                                    </Flex>
                                     {index === surveyQuestions.length - 1 && (
                                         <Button
+                                            color='#6E51FF'
+                                            px='xl'
                                             style={{ marginTop: 32 }}
                                             onClick={handleSubmit}
                                             disabled={!selectedChoice}
@@ -258,19 +282,9 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 ) : (
                     <Text>There are no questions available!</Text>
                 )}
-
             </Container>
 
-            <Box
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    width: '100%',
-                    height: '50%',
-                    background: 'rgba(0, 0, 0, 0.1)',
-                    opacity: 0.5,
-                }}
-            />
+
         </Box>
     );
 };

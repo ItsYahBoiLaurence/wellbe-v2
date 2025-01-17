@@ -27,7 +27,7 @@ const Completed = () => {
                     {Description}
                 </Text>
             </Box>
-            <Button loaderProps={{ type: 'dots' }} onClick={() => navigate('/my-wellbe')}>Next</Button>
+            <Button loaderProps={{ type: 'dots' }} onClick={() => navigate('/my-wellbe')}>Okay!</Button>
         </Container>
 
     );
