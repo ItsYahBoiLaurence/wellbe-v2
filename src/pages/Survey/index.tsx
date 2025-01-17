@@ -18,7 +18,7 @@ const SurveyPage = () => {
   };
 
   return (
-    <Box style={{ heigh: 100, backgroundColor: 'pink' }}>
+    <Box style={{ heigh: 100 }}>
       {surveyStatus === SurveyStatus.START && (
         <SurveyStartPage changeStateFunction={handleChange} status={surveyStatus} />
       )}

@@ -173,7 +173,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     };
 
     return (
-        <Box style={{ height: '100%', paddingTop: 24, paddingBottom: 24, backgroundColor: 'blue' }}>
+        <Box style={{ height: '100%', paddingTop: 24, paddingBottom: 24 }}>
             <Container
                 style={{
                     display: 'flex',
