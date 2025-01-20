@@ -75,7 +75,7 @@ const Slide = (props: SlideProps) => {
               )}
             </Box>
             {props.hasAction && (
-              <Box component={Link} to="/sign-in" style={{ width: '100%' }}>
+              <Box component={Link} to="/sign-up" style={{ width: '100%' }}>
                 <SecondaryButton
                   style={{
                     height: 48,
