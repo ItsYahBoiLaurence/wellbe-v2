@@ -88,16 +88,6 @@ const SignInPage = () => {
             })}
             error={errors.password?.message}
           />
-
-          <Text
-            style={{
-              fontSize: 12,
-              color: '#6B7280', // Gray color from Mantine
-            }}
-          >
-            You will receive an email verification with a 4-digit number to
-            authenticate your account.
-          </Text>
         </Box>
 
         <Box>

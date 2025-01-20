@@ -1,12 +1,8 @@
 import { Box, Container, PasswordInput, Text, TextInput, Title } from '@mantine/core';
-import { useMutation } from '@tanstack/react-query';
-import { Controller, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import { signup as signupApi } from '../../api/services/auth';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { PrimaryButton, TextButton } from '../../components/Buttons/Buttons';
 import { PageHeader } from '../../components/PageHeader';
-import PasswordField from '../../components/PasswordField';
-import { APP_CONFIG } from '../../utils/constants';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/validators';
 import { useContext } from 'react';
 import { AuthenticationContext } from '../../contexts/Authentication';
@@ -22,13 +18,12 @@ type SignUpReq = {
 }
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
   const { userRegister } = useContext(AuthenticationContext)
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpReq>({
     defaultValues: {
       firstname: '',
@@ -42,7 +37,6 @@ const SignUpPage = () => {
 
   const handleSignup = async (data) => {
     await userRegister(data.email, data.password, data.firstname, data.lastname, data.company, data.department)
-    navigate('/sign-up')
   }
 
   return (
@@ -115,6 +109,7 @@ const SignUpPage = () => {
         </Box>
         <Box>
           <PrimaryButton
+            disabled={isSubmitting}
             type="submit"
             style={{ width: '100%', marginBottom: 16 }}
           >

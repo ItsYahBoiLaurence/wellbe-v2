@@ -76,8 +76,8 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
             if (userCredential) {
-                const response = await api.post('/api/employee/register/', data)
-                console.log(response.data)
+                await api.post('/api/employee/register/', data)
+                navigate('/sign-in')
             }
         } catch (error) {
             throw error
