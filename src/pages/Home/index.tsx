@@ -7,6 +7,8 @@ import { Box, Container } from '@mantine/core';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryButton } from '../../components/Buttons/Buttons';
 import { Link } from 'react-router-dom';
+import { Carousel } from '@mantine/carousel';
+import { CarouselPaper } from '../../components/Paper/CustomPaper';
 
 const HomePage = () => {
   return (
@@ -43,51 +45,11 @@ const HomePage = () => {
             height: '100%',
           }}
         >
-          {/* <Carousel
-            plugins={[autoplay.current]}
-            onMouseEnter={autoplay.current.stop}
-            onMouseLeave={autoplay.current.reset}
-            withIndicators
-            slideGap="md"
-            withControls={false}
-            style={(t) => ({
-              '& .mantine-Carousel-indicators': {
-                top: -32,
-                '& .mantine-Carousel-indicator': {
-                  width: 8,
-                  height: 8,
-                  opacity: 0.5,
-                  backgroundColor: t.colors.primary[4],
-                  '&:not(:last-of-type)': {
-                    marginRight: 8,
-                  },
-                  '&[data-active="true"]': {
-                    opacity: 1,
-                  },
-                },
-              },
-            })}
-          >
-            <Carousel.Slide>
-              <QuoteCard
-                title="You are enough"
-                subtitle="Your are strong enough to handle your challenges, wise enough to find a solution to your problems, and capable enough to do whatever needs to be done."
-              />
-            </Carousel.Slide>
-            <Carousel.Slide>
-              <QuoteCard
-                title="Quote of the day"
-                subtitle="The truth is, they will never realize how big of a part you played...until you’re not playing it anymore."
-              />
-            </Carousel.Slide>
-            <Carousel.Slide>
-              <QuoteCard
-                title="From well-being, to being well."
-                subtitle="Join us in building a community that supports each other."
-              />
-            </Carousel.Slide>
-          </Carousel> */}
-
+          <Carousel height={200} dragFree slideGap="md" align="start" withControls={false} withIndicators>
+            <Carousel.Slide><CarouselPaper description={"Be the change that you wish to see in the world."} /></Carousel.Slide>
+            <Carousel.Slide><CarouselPaper description={"The only way to do great work is to love what you do."} /></Carousel.Slide>
+            <Carousel.Slide><CarouselPaper description={"Success is not final, failure is not fatal: It is the courage to continue that counts."} /></Carousel.Slide>
+          </Carousel>
           <Box
             style={{ display: 'flex', justifyContent: 'center', zIndex: 50 }}
           >

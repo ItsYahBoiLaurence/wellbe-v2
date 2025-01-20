@@ -68,31 +68,31 @@ export const DomainResult = ({ sessionCount }) => {
                 </Paper>
                 <Paper shadow="xs" radius="lg" p="md">
                     <Flex direction={"column"}>
-                        <Avatar radius="sm" size="lg" src={setIcon(report.CharacterDifference)} />
+                        <Avatar radius="sm" size="lg" src={setIcon(report.ContentmentDifference)} />
                         <Text size="">Contentment</Text>
                         <Flex direction={"row"} justify={'space-between'} >
-                            <Text size="lg" >{report.Character}%</Text>
-                            <Text size="lg" c={setTextColor(report.CharacterDifference)}>{report.CharacterDifference}%</Text>
+                            <Text size="lg" >{report.Contentment}%</Text>
+                            <Text size="lg" c={setTextColor(report.ContentmentDifference)}>{report.ContentmentDifference}%</Text>
                         </Flex>
                     </Flex>
                 </Paper>
                 <Paper shadow="xs" radius="lg" p="md">
                     <Flex direction={"column"}>
-                        <Avatar radius="sm" size="lg" src={setIcon(report.CharacterDifference)} />
+                        <Avatar radius="sm" size="lg" src={setIcon(report.ConnectednessDifference)} />
                         <Text size="">Connectedness</Text>
                         <Flex direction={"row"} justify={'space-between'} >
-                            <Text size="lg" >{report.Character}%</Text>
-                            <Text size="lg" c={setTextColor(report.CharacterDifference)}>{report.CharacterDifference}%</Text>
+                            <Text size="lg" >{report.Connectedness}%</Text>
+                            <Text size="lg" c={setTextColor(report.ConnectednessDifference)}>{report.ConnectednessDifference}%</Text>
                         </Flex>
                     </Flex>
                 </Paper>
                 <Paper shadow="xs" radius="lg" p="md">
                     <Flex direction={"column"}>
-                        <Avatar radius="sm" size="lg" src={setIcon(report.CharacterDifference)} />
+                        <Avatar radius="sm" size="lg" src={setIcon(report.CareerDifference)} />
                         <Text size="">Career</Text>
                         <Flex direction={"row"} justify={'space-between'} >
-                            <Text size="lg" >{report.Character}%</Text>
-                            <Text size="lg" c={setTextColor(report.CharacterDifference)}>{report.CharacterDifference}%</Text>
+                            <Text size="lg" >{report.Career}%</Text>
+                            <Text size="lg" c={setTextColor(report.CareerDifference)}>{report.CareerDifference}%</Text>
                         </Flex>
                     </Flex>
                 </Paper>
