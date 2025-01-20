@@ -7,7 +7,15 @@ import {
   Skeleton,
   Text,
   Title,
+  RingProgress,
+  Flex,
+  Paper,
+  Overlay,
+  Button,
+  Center
 } from '@mantine/core';
+import { BarChart } from '@mantine/charts';
+import { DomainResult, OverlayResult } from '../../components/DataVisualization/DataVisualization';
 import MyWellBeIllustration from '../../assets/my-wellbe-illustration.png';
 import { OutlineButton, PrimaryButton } from '../../components/Buttons/Buttons';
 import CalendarTodayIcon from '../../components/icons/CalendarTodayIcon';
@@ -57,6 +65,33 @@ const MyWellBePage = () => {
 
   const company: string = "Sample Company";
 
+  const [visible, setVisible] = useState(true);
+  const [completed, setCompleted] = useState(false)
+  const [sessionNumber, setSessionNumber] = useState(0)
+
+  const getSession = async () => {
+    try {
+      const params = {
+        email: user?.email,
+        company: company
+      }
+      const response = await api.get('/api/engine/latestSession', { params })
+      if (response.status === 200) {
+        setSessionNumber(response.data.statusCurrentSession)
+        return response.data.statusCurrentSession
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const isSessionCompleted = async () => {
+    const sessionNumber = await getSession()
+    const session = sessionNumber === 5 ? false : true
+    setCompleted(session)
+  }
+
+
   useEffect(() => {
     const getLatestAdvice = async (email: string, company: string): Promise<void> => {
       try {
@@ -77,6 +112,7 @@ const MyWellBePage = () => {
     if (user?.email) {
       getLatestAdvice(user.email, company);
     }
+    isSessionCompleted();
   }, [user?.email, company]); // Re-run the effect when user email or company changes
 
 
@@ -165,7 +201,35 @@ const MyWellBePage = () => {
           <Text>Schedule a Call</Text>
         </PrimaryButton>
       </Card>
-    </Container>
+      <Flex pos={'relative'} w={'100%'} h={"100%"} direction={'column'} p={'xl'} mt={32} style={{ backgroundColor: '#f2f7fe' }}>
+        {completed && (
+          <OverlayResult>
+            <RingProgress
+              style={{
+                alignSelf: 'center'
+              }}
+              size={130}
+              thickness={10}
+              label={
+                <Text size="xl" ta="center" px="xs" style={{ pointerEvents: 'none' }}>
+                  {sessionNumber}/5
+                </Text>
+              }
+              roundCaps
+              sections={[
+                { value: sessionNumber * 20, color: '#6B4EFF' },
+              ]}
+            />
+            <Text ta={'center'}>Complete {5 - sessionNumber} more surveys to reveal your insights!</Text>
+            <PrimaryButton onClick={() => setVisible((v) => !v)} mt={43} ta={'center'} disabled={completed}>
+              <Text>View Result</Text>
+            </PrimaryButton>
+          </OverlayResult>
+        )}
+
+        <DomainResult sessionCount={5} />
+      </Flex>
+    </Container >
   );
 };
 

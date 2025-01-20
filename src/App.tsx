@@ -8,6 +8,10 @@ import queryClient from './queryClient';
 import Routes from './Routes';
 import { Authentication } from './contexts/Authentication'
 import { ModalsProvider } from '@mantine/modals';
+import '@mantine/notifications/styles.css';
+import { Notifications } from '@mantine/notifications';
+
+
 
 function App() {
   return (
@@ -20,6 +24,7 @@ function App() {
             {/* <ProfileProvider> */}
             <Authentication>
               <ModalsProvider>
+                <Notifications />
                 <Routes />
               </ModalsProvider>
             </Authentication>

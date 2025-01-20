@@ -73,6 +73,10 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
     }, [user, location.pathname, navigate]);
 
+    useEffect(() => {
+
+    }, [])
+
     return (
         <AuthenticationContext.Provider value={{ user, login, logout }}>
             <Stack

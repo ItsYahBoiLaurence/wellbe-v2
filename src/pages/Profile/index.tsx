@@ -20,7 +20,6 @@ const ProfilePage = () => {
         company: company
       }
       await api.get('/api/employee/profile', { params }).then((response) => {
-        console.log(response.data)
         setUserProfile(response.data)
       })
     } catch (error) {

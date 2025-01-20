@@ -7,6 +7,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { Link } from 'react-router-dom';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { IconChevronLeft } from '@tabler/icons-react';
+import { NoQuestions } from '../../components/QuestionStatus';
 
 
 const choices = [
@@ -76,16 +77,10 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
 
     const [carousel, setCarousel] = useState(null)
 
-
-
-
     const generateQuestions = async (email: string, company: string) => {
         try {
             const params = { email, company };
             const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
-            if (response.data.message) {
-
-            }
             return response.data
         } catch (error) {
             console.error('Error generating questions:', error);
@@ -117,9 +112,8 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 setIsLoading(true)
                 const questions = await generateQuestions(currentUser, 'Sample Company');
                 setIsLoading(false)
-                console.log(questions.message)
-                if (questions) {
-                    setSurveyQuestions(questions.response.questions);
+                if (questions?.response?.questions) {
+                    setSurveyQuestions(questions?.response?.questions);
                 }
 
             } catch (error) {
@@ -273,11 +267,9 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                         ))}
                     </Carousel>
                 ) : (
-                    <Text>There are no questions available!</Text>
+                    <NoQuestions />
                 )}
             </Container>
-
-
         </Box>
     );
 };
