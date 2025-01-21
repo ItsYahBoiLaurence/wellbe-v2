@@ -80,7 +80,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
                 navigate('/sign-in')
             }
         } catch (error) {
-            throw error
+            throw Error
         }
     }
 

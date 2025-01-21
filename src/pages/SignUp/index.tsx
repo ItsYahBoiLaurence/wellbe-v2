@@ -1,11 +1,12 @@
 import { Box, Container, PasswordInput, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PrimaryButton, TextButton } from '../../components/Buttons/Buttons';
 import { PageHeader } from '../../components/PageHeader';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/validators';
-import { useContext } from 'react';
-import { AuthenticationContext } from '../../contexts/Authentication';
+import api from '../../api/api';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../api/firebaseServices/firebaseConfig';
 
 
 type SignUpReq = {
@@ -18,12 +19,13 @@ type SignUpReq = {
 }
 
 const SignUpPage = () => {
-  const { userRegister } = useContext(AuthenticationContext)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError
   } = useForm<SignUpReq>({
     defaultValues: {
       firstname: '',
@@ -36,7 +38,34 @@ const SignUpPage = () => {
   });
 
   const handleSignup = async (data) => {
-    await userRegister(data.email, data.password, data.firstname, data.lastname, data.company, data.department)
+    const payload = {
+      email: data.email,
+      firstName: data.firstname,
+      lastName: data.lastname,
+      company: data.company,
+      department: data.department,
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
+      if (userCredential) {
+        await api.post('/api/employee/register/', payload)
+        navigate('/sign-in')
+      }
+    }
+    catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('email', {
+          type: 'manual',
+          message: 'Email already in use!'
+        })
+      } else if (error.code === 'auth/weak-password') {
+        setError('password', {
+          type: 'manual',
+          message: 'Password too weak!'
+        })
+      }
+    }
   }
 
   return (
