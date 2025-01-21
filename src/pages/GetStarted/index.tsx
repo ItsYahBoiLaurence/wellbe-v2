@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import AppLogo from '../../assets/logo.svg';
 import { SecondaryButton } from '../../components/Buttons/Buttons';
+import BG from '../../assets/mountainbg.jpeg'
 
 type SlideProps = {
   title?: string;
@@ -31,7 +32,7 @@ const Slide = (props: SlideProps) => {
         style={{
           width: '100%',
           height: '100%',
-          background: 'url(https://picsum.photos/200/300)',
+          backgroundImage: `url(${BG})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

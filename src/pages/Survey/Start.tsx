@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { PageHeader } from '../../components/PageHeader';
+import BG from '../../assets/startJourney.jpeg'
+
 
 enum SurveyStatus {
     START = 'survey-start',
@@ -27,7 +29,7 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                 style={{
                     width: '100%',
                     height: 350,
-                    background: 'url(https://picsum.photos/200/300)',
+                    backgroundImage: `url(${BG})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
