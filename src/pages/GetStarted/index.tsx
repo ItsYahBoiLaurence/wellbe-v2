@@ -126,7 +126,7 @@ const GetStartedPage = () => {
         <Carousel.Slide>
           <Slide
             title="You’re not alone, we are here."
-            subtitle="New ways to find balance for you, work and your family."
+            subtitle="New ways to find balance for you, work and your loved ones."
           />
         </Carousel.Slide>
         <Carousel.Slide>
