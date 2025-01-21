@@ -200,7 +200,6 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                     <Carousel
 
                         getEmblaApi={setCarousel}
-                        // Attach the ref here
                         withControls={isLoading}
                         onSlideChange={(index) => setCurrentSlide(index)}
                         slideGap={32}
@@ -231,15 +230,13 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                                     </Text>
                                     <Flex
                                         justify={'center'}
-                                        columnGap="md"
+                                        columnGap="xs"
                                         rowGap='md'
                                         wrap="wrap"
                                         style={{ marginTop: 20 }}>
                                         {choices.map((choice) => (
                                             <Button
-                                                styles={{}}
                                                 px="xl"
-                                                size='xl'
                                                 key={`${choice.value}-${question.indexQuestion}`}
                                                 variant={selectedChoice === choice.value ? 'filled' : 'outline'}
                                                 color='#6E51FF'
