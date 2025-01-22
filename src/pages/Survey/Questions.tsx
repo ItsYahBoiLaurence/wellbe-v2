@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-import { Box, Container, Progress, Button, Text, Card, LoadingOverlay, Flex, Paper } from '@mantine/core';
+import { Box, Container, Progress, Button, Text, Card, LoadingOverlay, Flex, Paper, Title, Grid, SimpleGrid } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import api from '../../api/api';
 import { AuthenticationContext } from '../../contexts/Authentication';
@@ -8,7 +8,8 @@ import { Link } from 'react-router-dom';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { IconChevronLeft } from '@tabler/icons-react';
 import { NoQuestions } from '../../components/QuestionStatus';
-
+import { Controller, useForm, useFieldArray } from 'react-hook-form'
+import { PrimaryButton } from '../../components/Buttons/Buttons';
 
 const choices = [
     { label: 'Strongly Agree', value: 4 },
@@ -68,14 +69,23 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
     const authContext = useContext(AuthenticationContext);
     const { user } = authContext;
     const currentUser = user?.email as string
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [progressValue, setProgressValue] = useState(0);
-    const [responses, setResponses] = useState<SurveyResponses>({});
-    const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+
     const [surveyQuestions, setSurveyQuestions] = useState<SurveyQuestion[]>([]);
     const [isLoading, setIsLoading] = useState(false)
 
-    const [carousel, setCarousel] = useState(null)
+    const [remote, setRemote] = useState(null)
+
+    const scrollNext = () => {
+        if (remote) {
+            remote.scrollNext();
+        }
+    }
+
+    const handlePrevClick = () => {
+        if (remote) {
+            remote.scrollPrev();
+        }
+    }
 
     const generateQuestions = async (email: string, company: string) => {
         try {
@@ -113,7 +123,8 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 const questions = await generateQuestions(currentUser, 'Sample Company');
                 setIsLoading(false)
                 if (questions?.response?.questions) {
-                    setSurveyQuestions(questions?.response?.questions);
+                    console.log(questions?.response.questions)
+                    setSurveyQuestions(questions?.response?.questions)
                 }
 
             } catch (error) {
@@ -123,46 +134,48 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         fetchData();
     }, []);
 
-    useEffect(() => {
-        if (surveyQuestions.length > 0) {
-            const progress = ((currentSlide + 1) / surveyQuestions.length) * 100;
-            setProgressValue(progress);
-            setSelectedChoice(responses[surveyQuestions[currentSlide]?.indexQuestion] || null);
-        }
-    }, [currentSlide, responses, surveyQuestions]);
+    const { control, handleSubmit, setValue, formState: { isSubmitting }, watch } = useForm({
+        defaultValues: {
+            answers: [],
+        },
+    });
 
-    const handleChoiceClicked = (value: number) => {
-        setResponses((prev) => ({
-            ...prev,
-            [surveyQuestions[currentSlide].indexQuestion]: value,
-        }));
-        setSelectedChoice(value);
-        if (carousel) carousel.scrollNext(); // Access Embla API to scroll
+    const { fields, append } = useFieldArray({
+        control,
+        name: "answers",
+    });
+
+    const answers = watch("answers")
+
+    const isDissabled = isSubmitting || answers.length < surveyQuestions.length
+    const getButtonVariant = (indexQuestion, value) => {
+        // Check if this button's value matches the selected answer
+        const selectedAnswer = answers.find((item) => item.indexQuestion === indexQuestion)?.answer;
+        return selectedAnswer === value ? "filled" : "outline";
     };
 
-    const handleSubmit = async () => {
-        const data: Answers = {
-            answers: Object.keys(responses).map((questionId) => {
-                // Format the index as needed. Assuming questionId is already in the correct format.
-                const formattedIndex = questionId.replace('_', '_'); // You can adjust this if necessary
+    const handleAnswer = (indexQuestion, answer) => {
+        const existingIndex = fields.findIndex((item) => item.indexQuestion === indexQuestion);
+        if (existingIndex !== -1) {
+            setValue(`answers.${existingIndex}.answer`, answer);
+        } else {
+            append({ indexQuestion, answer });
+        }
+        scrollNext();
+    };
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const progressValue = ((currentSlide + 1) / surveyQuestions.length) * 100;
 
-                return {
-                    indexQuestion: formattedIndex,
-                    answer: responses[questionId],
-                };
-            }),
-        };
-        // Email parameter
+    const onSubmit = async (data) => {
         try {
             setIsLoading(true)
             await submitAnswers(currentUser, data)
             setIsLoading(false)
         } catch (error) {
-            console.error(error);
+            throw error
         }
-
         changeStateFunction(SurveyStatus.COMPLETED);
-    };
+    }
 
     return (
         <Box pos="relative" style={{ height: '100%', paddingTop: 24, paddingBottom: 24 }}>
@@ -194,80 +207,43 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                 />
                 <Text style={{ fontSize: '32px', marginBottom: '32px' }}>Questions</Text>
                 <Box style={{ marginBottom: 32 }}>
-                    <Progress value={progressValue} />
+                    <Progress color="violet" value={progressValue} />
                 </Box>
                 {surveyQuestions.length > 0 ? (
-                    <Carousel
-
-                        getEmblaApi={setCarousel}
-                        withControls={isLoading}
-                        onSlideChange={(index) => setCurrentSlide(index)}
-                        slideGap={32}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            flexGrow: 1,
-                            height: '100%',
-                            '& .mantineCarouselViewport': { height: '100%' },
-                            '& .mantineCarouselContainer': { height: '100%' },
-                        }}
-                    >
-                        {surveyQuestions.map((question, index) => (
-                            <Carousel.Slide key={question.indexQuestion}> {/* Use indexQuestion as key */}
-                                <Card
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        height: '100%',
-                                        padding: 32,
-                                        backgroundColor: 'white'
-                                    }}
-                                >
-                                    <Text size="xl">
-                                        {question.question}
-                                    </Text>
-                                    <Flex
-                                        justify={'center'}
-                                        columnGap="xs"
-                                        rowGap='md'
-                                        wrap="wrap"
-                                        style={{ marginTop: 20 }}>
-                                        {choices.map((choice) => (
-                                            <Button
-                                                px="xl"
-                                                key={`${choice.value}-${question.indexQuestion}`}
-                                                variant={selectedChoice === choice.value ? 'filled' : 'outline'}
-                                                color='#6E51FF'
-                                                onClick={() => handleChoiceClicked(choice.value)}
-                                            >
-                                                <Text style={{ fontSize: '16px' }}>
-                                                    {choice.label}
-                                                </Text>
-                                            </Button>
-                                        ))}
-                                    </Flex>
-                                    {index === surveyQuestions.length - 1 && (
-                                        <Button
-                                            color='#6E51FF'
-                                            px='xl'
-                                            style={{ marginTop: 32 }}
-                                            onClick={handleSubmit}
-                                            disabled={!selectedChoice}
-                                        >
-                                            Submit
-                                        </Button>
-                                    )}
-                                </Card>
-                            </Carousel.Slide>
-                        ))}
-                    </Carousel>
+                    <Box p={24} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} h={'100%'} >
+                        <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%', flexDirection: 'column', display: 'flex', justifyContent: 'space-between' }}>
+                            < Carousel slideGap="xl" getEmblaApi={setRemote} withControls={false} onSlideChange={setCurrentSlide}>
+                                {
+                                    surveyQuestions.map((q) => (
+                                        <Carousel.Slide style={{ height: '100%' }} >
+                                            <Box key={q.indexQuestion} h={250} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                                <Title ta={'center'} order={2} mb={32}>{q.question}</Title>
+                                                <SimpleGrid cols={2}>
+                                                    {choices.map((choice) => (
+                                                        <Button
+                                                            key={choice.label}
+                                                            color={'#6E51FF'}
+                                                            variant={getButtonVariant(q.indexQuestion, choice.value)}
+                                                            onClick={() => handleAnswer(q.indexQuestion, choice.value)} >{choice.label}</Button>
+                                                    ))}
+                                                </SimpleGrid>
+                                            </Box>
+                                        </Carousel.Slide>
+                                    ))
+                                }
+                            </Carousel>
+                            <Flex direction={'row'} justify={'space-between'} >
+                                <PrimaryButton px={32} onClick={handlePrevClick}>Back</PrimaryButton>
+                                <Button color='#6E51FF' px={32} disabled={isDissabled} type="submit">Submit</Button>
+                            </Flex>
+                        </form>
+                    </Box>
                 ) : (
                     <NoQuestions />
-                )}
-            </Container>
-        </Box>
+                )
+                }
+            </Container >
+        </Box >
     );
 };
 
