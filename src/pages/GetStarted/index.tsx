@@ -122,21 +122,11 @@ const GetStartedPage = () => {
           zIndex: 1,
         }}
       />
-      <Carousel withIndicators height={'100vh'} withControls={false}>
-        <Carousel.Slide>
-          <Slide
-            title="You’re not alone, we are here."
-            subtitle="New ways to find balance for you, work and your loved ones."
-          />
-        </Carousel.Slide>
-        <Carousel.Slide>
-          <Slide
-            title="From well-being, to being well."
-            subtitle="Join us in building a community that supports each other."
-            hasAction
-          />
-        </Carousel.Slide>
-      </Carousel>
+      <Slide
+        title="From well-being, to being well."
+        subtitle="Join us in building a community that supports each other."
+        hasAction
+      />
     </Box>
   );
 };

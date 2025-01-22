@@ -76,6 +76,7 @@ const SignUpPage = () => {
         paddingTop: 16,
         paddingBottom: 16,
         height: '100vh',
+        width: '90vw'
       }}
     >
       <PageHeader previousPage="/login" />

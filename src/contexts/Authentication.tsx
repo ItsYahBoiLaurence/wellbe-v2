@@ -1,10 +1,9 @@
 import { createContext, useState, PropsWithChildren, useEffect } from "react";
 import { auth } from "../api/firebaseServices/firebaseConfig";
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
-
 
 interface AuthContextType {
     user: User | null;
@@ -13,14 +12,13 @@ interface AuthContextType {
     userRegister: (email: string, password: string, company: string, department: string, firstname: string, lastname: string) => Promise<void>;
 };
 
-// Create context with a default value of `undefined`
 export const AuthenticationContext = createContext<AuthContextType>({
     user: null,
     login: async () => {
-        throw new Error('login method not implemented'); // Placeholder
+        throw new Error('login method not implemented');
     },
     logout: async () => {
-        throw new Error('logout method not implemented'); // Placeholder
+        throw new Error('logout method not implemented');
     },
     userRegister: async () => {
         throw new Error('register method not implemented')
@@ -46,6 +44,8 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const login = async (email: string, password: string): Promise<void> => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+            const token = await userCredentials.user.getIdToken();
+            localStorage.setItem('TOKEN', token);
             setUser(userCredentials.user);
         } catch (error) {
             console.error("Login failed", error);
@@ -58,13 +58,14 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             await signOut(auth);
             setUser(null);
+            localStorage.removeItem("TOKEN");
         } catch (error) {
             console.error("Logout failed", error);
             throw error;
         }
     };
 
-
+    // Registration function
     const userRegister = async (email: string, password: string, firstname: string, lastname: string, company: string, department: string) => {
         const data = {
             email: email,
@@ -72,44 +73,39 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
             lastName: lastname,
             company: company,
             department: department,
-        }
+        };
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             if (userCredential) {
-                await api.post('/api/employee/register/', data)
-                navigate('/sign-in')
+                await api.post('/api/employee/register/', data);
+                navigate('/sign-in');
             }
         } catch (error) {
-            throw Error
+            console.error("Registration failed", error);
+            throw error;
         }
-    }
+    };
 
-    // Redirect to sign-in if user is not logged in and accessing restricted paths
+    // Synchronize user state with Firebase Auth
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser); // Keep user state in sync
+        });
+        return () => unsubscribe(); // Clean up listener on unmount
+    }, []);
+
+    // Redirect to appropriate paths based on user authentication state
     useEffect(() => {
         if (!user && !EXCLUDED_PATHS.includes(location.pathname)) {
             navigate("/get-started");
-        }
-    }, [user, location.pathname, navigate]);
-
-    // Redirect to home if user is logged in and accessing excluded paths
-    useEffect(() => {
-        if (user && EXCLUDED_PATHS.includes(location.pathname)) {
+        } else if (user && EXCLUDED_PATHS.includes(location.pathname)) {
             navigate("/");
         }
     }, [user, location.pathname, navigate]);
 
-    useEffect(() => {
-
-    }, [])
-
     return (
         <AuthenticationContext.Provider value={{ user, login, logout, userRegister }}>
-            <Stack
-                style={{
-                    width: "100vw",
-                    height: "100vh",
-                }}
-            >
+            <Stack style={{ width: "100vw", height: "100vh" }}>
                 {children}
             </Stack>
         </AuthenticationContext.Provider>
