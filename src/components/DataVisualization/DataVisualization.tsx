@@ -1,9 +1,11 @@
 import { Overlay, Center, Paper, SimpleGrid, Text, Flex, Indicator, Avatar } from "@mantine/core"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import api from "../../api/api"
 import Decreased from '../../assets/decrease.png'
 import Increased from '../../assets/increase.png'
 import Maintained from '../../assets/maintained.png'
+import { AuthenticationContext } from "../../contexts/Authentication"
+
 
 export const OverlayResult = ({ children }) => {
     return (
