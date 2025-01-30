@@ -48,6 +48,39 @@ const messages = [
 ];
 
 const InboxPage = () => {
+
+  // useEffect(() => {
+  //   const getAllAdvice = async () => {
+  //     const params = {
+  //       email: userEmail,
+  //       company: 'Sample Company',
+  //     }
+  //     try {
+  //       const response = await api.get("/api/engine/allAdvise/", { params })
+  //       setMessage(response.data?.message)
+  //       console.log(response.data?.message)
+  //     } catch (error) {
+  //       throw error
+  //     }
+  //   }
+
+  //   getAllAdvice();
+  // }, [])
+
+
+  const convertDate = (stringDate) => {
+    const date = new Date(stringDate)
+    const formattedDate = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    return formattedDate
+  }
+
+
+
   return (
     <Container fluid style={{ margin: "0px", overflow: "auto" }}>
       <Text size="xl" mb="md">
@@ -86,7 +119,7 @@ const InboxPage = () => {
 
                   {/* Timestamp */}
                   <Text size="xs" color="dimmed">
-                    {message.timestamp}
+                    {convertDate("2025-01-15T18:52:57.552Z")}
                   </Text>
                 </Group>
 

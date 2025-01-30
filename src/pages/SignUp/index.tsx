@@ -3,11 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { PrimaryButton, TextButton } from '../../components/Buttons/Buttons';
 import { PageHeader } from '../../components/PageHeader';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/validators';
+import { EMAIL_REGEX } from '../../utils/validators';
 import api from '../../api/api';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../api/firebaseServices/firebaseConfig';
-
 
 type SignUpReq = {
   firstname: string,
@@ -32,8 +31,8 @@ const SignUpPage = () => {
       lastname: '',
       email: '',
       password: '',
-      company: 'Sample Company',
-      department: 'Sample Department'
+      company: 'Mayan Solutions Inc.',
+      department: 'Human Resources'
     },
   });
 
