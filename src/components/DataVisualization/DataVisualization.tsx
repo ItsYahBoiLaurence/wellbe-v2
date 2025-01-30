@@ -19,10 +19,11 @@ export const OverlayResult = ({ children }) => {
 }
 export const DomainResult = ({ sessionCount }) => {
     const [report, setReport] = useState({})
+    const { user } = useContext(AuthenticationContext)
     const generateReport = async () => {
         const params = {
             company: "Mayan Solutions Inc.",
-            email: "laurence@gmail.com",
+            email: user?.email,
         };
         if (sessionCount == 5) {
             try {
