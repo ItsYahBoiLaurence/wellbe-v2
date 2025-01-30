@@ -53,7 +53,7 @@ const InboxPage = () => {
   //   const getAllAdvice = async () => {
   //     const params = {
   //       email: userEmail,
-  //       company: 'Sample Company',
+  //       company: 'Mayan Solutions Inc.',
   //     }
   //     try {
   //       const response = await api.get("/api/engine/allAdvise/", { params })

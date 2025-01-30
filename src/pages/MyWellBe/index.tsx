@@ -63,7 +63,7 @@ const MyWellBePage = () => {
   const { user } = authContext;
   const [tip, setTip] = useState<string>("");
 
-  const company: string = "Sample Company";
+  const company: string = "Mayan Solutions Inc.";
 
   const [visible, setVisible] = useState(true);
   const [completed, setCompleted] = useState(false)

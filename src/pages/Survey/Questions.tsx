@@ -120,7 +120,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         const fetchData = async () => {
             try {
                 setIsLoading(true)
-                const questions = await generateQuestions(currentUser, 'Sample Company');
+                const questions = await generateQuestions(currentUser, 'Mayan Solutions Inc.');
                 setIsLoading(false)
                 if (questions?.response?.questions) {
                     console.log(questions?.response.questions)

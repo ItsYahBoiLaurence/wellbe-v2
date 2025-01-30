@@ -21,7 +21,7 @@ export const DomainResult = ({ sessionCount }) => {
     const [report, setReport] = useState({})
     const generateReport = async () => {
         const params = {
-            company: "Sample Company",
+            company: "Mayan Solutions Inc.",
             email: "laurence@gmail.com",
         };
         if (sessionCount == 5) {
