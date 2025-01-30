@@ -29,6 +29,23 @@ export const DomainResult = ({ sessionCount }) => {
         };
         if (sessionCount == 5) {
             try {
+                const response = await api.get('/api/engine/generateReport', { params })
+                if (response.status === 403) {
+                    console.log(response)
+                }
+
+                if (response.data.statusCode === 202) {
+                    console.log(response)
+                }
+
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        if (sessionCount == 5) {
+            try {
                 await api.get('/api/engine/latestComparison', { params }).then((response) => {
                     setReport(response.data)
                 })
