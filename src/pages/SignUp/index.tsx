@@ -7,6 +7,7 @@ import { EMAIL_REGEX } from '../../utils/validators';
 import api from '../../api/api';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../api/firebaseServices/firebaseConfig';
+import { useLocation } from 'react-router-dom';
 
 type SignUpReq = {
   firstname: string,
@@ -19,20 +20,21 @@ type SignUpReq = {
 
 const SignUpPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError
+
   } = useForm<SignUpReq>({
     defaultValues: {
-      firstname: '',
-      lastname: '',
-      email: '',
+      firstname: new URLSearchParams(location.search).get('firstName') || "",
+      lastname: new URLSearchParams(location.search).get('lastName') || "",
+      email: new URLSearchParams(location.search).get('email') || "",
       password: '',
-      company: 'Mayan Solutions Inc.',
-      department: 'Human Resources'
+      company: new URLSearchParams(location.search).get('company') || "",
+      department: new URLSearchParams(location.search).get('department') || ""
     },
   });
 
@@ -45,26 +47,28 @@ const SignUpPage = () => {
       department: data.department,
     }
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
-      if (userCredential) {
-        await api.post('/api/employee/register/', payload)
-        navigate('/sign-in')
-      }
-    }
-    catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        setError('email', {
-          type: 'manual',
-          message: 'Email already in use!'
-        })
-      } else if (error.code === 'auth/weak-password') {
-        setError('password', {
-          type: 'manual',
-          message: 'Password too weak!'
-        })
-      }
-    }
+    console.log(payload)
+
+    // try {
+    //   const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
+    //   if (userCredential) {
+    //     await api.post('/api/employee/register/', payload)
+    //     navigate('/sign-in')
+    //   }
+    // }
+    // catch (error) {
+    //   if (error.code === 'auth/email-already-in-use') {
+    //     setError('email', {
+    //       type: 'manual',
+    //       message: 'Email already in use!'
+    //     })
+    //   } else if (error.code === 'auth/weak-password') {
+    //     setError('password', {
+    //       type: 'manual',
+    //       message: 'Password too weak!'
+    //     })
+    //   }
+    // }
   }
 
   return (
@@ -106,6 +110,7 @@ const SignUpPage = () => {
               },
             })}
             error={errors.email?.message}
+            disabled
           />
 
           <TextInput
@@ -115,6 +120,7 @@ const SignUpPage = () => {
               required: 'First name is required',
             })}
             error={errors.firstname?.message}
+            disabled
           />
 
           <TextInput
@@ -124,6 +130,7 @@ const SignUpPage = () => {
               required: 'Last name is required',
             })}
             error={errors.lastname?.message}
+            disabled
           />
 
           <PasswordInput
