@@ -15,7 +15,7 @@ export const NoQuestions = () => {
     const [message, setMessage] = useState("")
     const generateReport = async () => {
         const params = {
-            company: 'Mayan Solutions Inc.',
+            company: 'Positive Workplaces',
             email: user?.email
         }
         try {

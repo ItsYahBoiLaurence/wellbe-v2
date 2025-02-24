@@ -24,7 +24,7 @@ export const DomainResult = ({ sessionCount }) => {
     const { user } = useContext(AuthenticationContext)
     const generateReport = async () => {
         const params = {
-            company: "Mayan Solutions Inc.",
+            company: "Positive Workplaces",
             email: user?.email,
         };
         if (sessionCount == 5) {

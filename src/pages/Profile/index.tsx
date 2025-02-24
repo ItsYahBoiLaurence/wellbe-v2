@@ -40,7 +40,7 @@ const ProfilePage = () => {
       onCancel: () => { },
       onConfirm: () => logout(),
     });
-  useEffect(() => { fetchUserProfile(user?.email as string, "Mayan Solutions Inc.") }, [])
+  useEffect(() => { fetchUserProfile(user?.email as string, "Positive Workplaces") }, [])
 
   useEffect(() => {
     if (userProfile.FirstName) {
