@@ -47,28 +47,26 @@ const SignUpPage = () => {
       department: data.department,
     }
 
-    console.log(payload)
-
-    // try {
-    //   const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
-    //   if (userCredential) {
-    //     await api.post('/api/employee/register/', payload)
-    //     navigate('/sign-in')
-    //   }
-    // }
-    // catch (error) {
-    //   if (error.code === 'auth/email-already-in-use') {
-    //     setError('email', {
-    //       type: 'manual',
-    //       message: 'Email already in use!'
-    //     })
-    //   } else if (error.code === 'auth/weak-password') {
-    //     setError('password', {
-    //       type: 'manual',
-    //       message: 'Password too weak!'
-    //     })
-    //   }
-    // }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
+      if (userCredential) {
+        await api.post('/api/employee/register/', payload)
+        navigate('/sign-in')
+      }
+    }
+    catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('email', {
+          type: 'manual',
+          message: 'Email already in use!'
+        })
+      } else if (error.code === 'auth/weak-password') {
+        setError('password', {
+          type: 'manual',
+          message: 'Password too weak!'
+        })
+      }
+    }
   }
 
   return (
