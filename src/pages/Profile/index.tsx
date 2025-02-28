@@ -1,4 +1,4 @@
-import { Container, Avatar, Text, Box, Stack, Paper, Flex, Modal, Button } from '@mantine/core';
+import { Container, Avatar, Text, Box, Stack, Paper, Flex, Modal, Button, Center } from '@mantine/core';
 import { useContext, useEffect, useState } from 'react';
 import { AuthenticationContext } from '../../contexts/Authentication';
 import api from '../../api/api';
@@ -49,58 +49,60 @@ const ProfilePage = () => {
     return;
   }, [userProfile])
   return (
-    <Container py={24}>
-      <Box>
-        <Avatar
-          size={80}
-          radius={120}
-          mx="auto"
+    <Center>
+      <Stack gap='xs' align='center'>
+        <Box>
+          <Avatar
+            size={80}
+            radius={120}
+            mx="auto"
+          >
+            {userImage[0]}
+          </Avatar>
+          <Text ta="center" fw={500} mt="md">
+            User Profile
+          </Text>
+        </Box>
+        <Stack
+          h={450}
+          w={'90vw'}
+          bg="var(--mantine-color-body)"
+          align="stretch"
+          justify="center"
         >
-          {userImage[0]}
-        </Avatar>
-        <Text ta="center" fz="lg" fw={500} mt="md">
-          User Profile
-        </Text>
-      </Box>
-      <Stack
-        h={450}
-        w={'90vw'}
-        bg="var(--mantine-color-body)"
-        align="stretch"
-        justify="center"
-      >
-        <Paper withBorder p="md">
-          <Flex justify={'space-between'}>
-            <Text>First name</Text>
-            <Text>{userProfile.FirstName}</Text>
-          </Flex>
-        </Paper>
-        <Paper shadow="xs" withBorder p="md">
-          <Flex justify={'space-between'}>
-            <Text>Last name</Text>
-            <Text>{userProfile.LastName}</Text>
-          </Flex>
-        </Paper>
-        <Paper shadow="xs" withBorder p="md">
-          <Flex justify={'space-between'}>
-            <Text>Email</Text>
-            <Text>{userProfile.email}</Text>
-          </Flex>
-        </Paper>
-        <Paper shadow="xs" withBorder p="md">
-          <Flex justify={'space-between'}>
-            <Text>Company</Text>
-            <Text>{userProfile.Company}</Text>
-          </Flex>
-        </Paper>
-        <Paper shadow="xs" withBorder p="md" onClick={openModal} style={{ cursor: 'pointer' }}>
-          <Flex justify={'space-between'} align={'center'}>
-            <Text>Logout</Text>
-            <Text style={{ paddingTop: 5 }}><IconChevronRight /></Text>
-          </Flex>
-        </Paper>
+          <Paper withBorder p="md">
+            <Flex justify={'space-between'}>
+              <Text>First name</Text>
+              <Text>{userProfile.FirstName}</Text>
+            </Flex>
+          </Paper>
+          <Paper shadow="xs" withBorder p="md">
+            <Flex justify={'space-between'}>
+              <Text>Last name</Text>
+              <Text>{userProfile.LastName}</Text>
+            </Flex>
+          </Paper>
+          <Paper shadow="xs" withBorder p="md">
+            <Flex justify={'space-between'}>
+              <Text>Email</Text>
+              <Text>{userProfile.email}</Text>
+            </Flex>
+          </Paper>
+          <Paper shadow="xs" withBorder p="md">
+            <Flex justify={'space-between'}>
+              <Text>Company</Text>
+              <Text>{userProfile.Company}</Text>
+            </Flex>
+          </Paper>
+          <Paper shadow="xs" withBorder p="md" onClick={openModal} style={{ cursor: 'pointer' }}>
+            <Flex justify={'space-between'} align={'center'}>
+              <Text>Logout</Text>
+              <Text style={{ paddingTop: 5 }}><IconChevronRight /></Text>
+            </Flex>
+          </Paper>
+        </Stack>
       </Stack>
-    </Container>
+    </Center>
   );
 };
 

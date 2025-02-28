@@ -101,36 +101,8 @@ const Mobile = () => {
 };
 
 const DashboardLayout = () => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
   return (
-    <>
-      {isMobile ? (
-        <Mobile />
-      ) : (
-        <Stack
-          style={(theme) => ({
-            height: '100vh',
-            width: '100vw',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: theme.colors.darkGray[7],
-            background: `radial-gradient(circle, ${theme.colors.gray[1]} 0%, ${theme.colors.darkGray[5]} 100%)`,
-          })}
-        >
-          <Box
-            component="img"
-            src={AppLogo}
-            alt="logo"
-            height={100}
-            style={{ marginBottom: 64 }}
-          />
-          <Title order={1}>Wellbe is best used in a mobile browser</Title>
-          <Text style={{ fontSize: 20 }}>
-            For best experience, please switch to a mobile browser
-          </Text>
-        </Stack>
-      )}
-    </>
+    <Mobile />
   );
 };
 
