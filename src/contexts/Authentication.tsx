@@ -45,7 +45,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredentials.user.getIdToken();
-            localStorage.setItem('TOKEN', token);
+            localStorage.setItem('CLIENT_TOKEN', token);
             setUser(userCredentials.user);
         } catch (error) {
             console.error("Login failed", error);
@@ -58,7 +58,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             await signOut(auth);
             setUser(null);
-            localStorage.removeItem("TOKEN");
+            localStorage.removeItem("CLIENT_TOKEN");
         } catch (error) {
             console.error("Logout failed", error);
             throw error;
