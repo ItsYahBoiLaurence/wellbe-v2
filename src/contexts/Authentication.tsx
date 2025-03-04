@@ -4,6 +4,7 @@ import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signO
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
+import queryClient from "../queryClient";
 
 interface AuthContextType {
     user: User | null;
@@ -45,6 +46,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredentials.user.getIdToken();
+
             localStorage.setItem('CLIENT_TOKEN', token);
             setUser(userCredentials.user);
         } catch (error) {
@@ -58,6 +60,9 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             await signOut(auth);
             setUser(null);
+            localStorage.removeItem("CLIENT_USER_COMPANY");
+            queryClient.removeQueries();
+            queryClient.clear();
             localStorage.removeItem("CLIENT_TOKEN");
         } catch (error) {
             console.error("Logout failed", error);
@@ -88,10 +93,15 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
 
     // Synchronize user state with Firebase Auth
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser); // Keep user state in sync
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setUser(currentUser);
+            const userData = await currentUser?.getIdTokenResult()
+            if (userData) {
+                localStorage.setItem('CLIENT_USER_COMPANY', userData?.claims.company as string)
+            }
+            console.log(localStorage.getItem('USER_COMPANY'))
         });
-        return () => unsubscribe(); // Clean up listener on unmount
+        return () => unsubscribe();
     }, []);
 
     // Redirect to appropriate paths based on user authentication state

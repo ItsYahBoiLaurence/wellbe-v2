@@ -7,6 +7,7 @@ import { modals } from "@mantine/modals"
 
 
 const ProfilePage = () => {
+  const company = localStorage.getItem("CLIENT_USER_COMPANY") as string
 
   const { user, logout } = useContext(AuthenticationContext)
 
@@ -40,7 +41,7 @@ const ProfilePage = () => {
       onCancel: () => { },
       onConfirm: () => logout(),
     });
-  useEffect(() => { fetchUserProfile(user?.email as string, "Positive Workplaces") }, [])
+  useEffect(() => { fetchUserProfile(user?.email as string, company) }, [])
 
   useEffect(() => {
     if (userProfile.FirstName) {

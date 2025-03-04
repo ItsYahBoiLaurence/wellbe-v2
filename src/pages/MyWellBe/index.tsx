@@ -63,7 +63,8 @@ const MyWellBePage = () => {
   const { user } = authContext;
   const [tip, setTip] = useState<string>("");
 
-  const company: string = "Positive Workplaces";
+  const company = localStorage.getItem("CLIENT_USER_COMPANY")
+
 
   const [visible, setVisible] = useState(true);
   const [completed, setCompleted] = useState(false)
@@ -110,7 +111,7 @@ const MyWellBePage = () => {
     };
     // Check if user email is available before making the request
     if (user?.email) {
-      getLatestAdvice(user.email, company);
+      getLatestAdvice(user.email, company as string);
     }
     isSessionCompleted();
   }, [user?.email, company]); // Re-run the effect when user email or company changes

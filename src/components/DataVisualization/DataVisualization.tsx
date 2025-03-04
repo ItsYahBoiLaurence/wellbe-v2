@@ -20,11 +20,14 @@ export const OverlayResult = ({ children }) => {
 
 }
 export const DomainResult = ({ sessionCount }) => {
+
+    const company = localStorage.getItem("CLIENT_USER_COMPANY")
+
     const [report, setReport] = useState({})
     const { user } = useContext(AuthenticationContext)
     const generateReport = async () => {
         const params = {
-            company: "Positive Workplaces",
+            company: company,
             email: user?.email,
         };
         if (sessionCount == 5) {

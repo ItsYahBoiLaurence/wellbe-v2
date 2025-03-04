@@ -66,6 +66,8 @@ interface ResponseMessage {
 
 
 const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) => {
+    const company = localStorage.getItem("CLIENT_USER_COMPANY") as string
+
     const authContext = useContext(AuthenticationContext);
     const { user } = authContext;
     const currentUser = user?.email as string
@@ -120,7 +122,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         const fetchData = async () => {
             try {
                 setIsLoading(true)
-                const questions = await generateQuestions(currentUser, 'Positive Workplaces');
+                const questions = await generateQuestions(currentUser, company);
                 setIsLoading(false)
                 if (questions?.response?.questions) {
                     console.log(questions?.response.questions)
