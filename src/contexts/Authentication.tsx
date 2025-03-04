@@ -99,7 +99,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
             if (userData) {
                 localStorage.setItem('CLIENT_USER_COMPANY', userData?.claims.company as string)
             }
-            console.log(localStorage.getItem('USER_COMPANY'))
+            console.log(localStorage.getItem('CLIENT_USER_COMPANY'))
         });
         return () => unsubscribe();
     }, []);
