@@ -117,7 +117,7 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                     paddingBottom: 32,
                 }}
             >
-                <Button onClick={handleSubmit}>Ready? Let's Start</Button>
+                <Button onClick={handleSubmit} size='xl'><Text size='xs'>Ready? Let's Start</Text></Button>
             </Box>
         </Box>
     );

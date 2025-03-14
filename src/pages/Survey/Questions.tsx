@@ -12,10 +12,10 @@ import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import { PrimaryButton } from '../../components/Buttons/Buttons';
 
 const choices = [
+    { label: 'Strongly Disagree', value: 1 },
+    { label: 'Disagree', value: 2 },
     { label: 'Strongly Agree', value: 4 },
     { label: 'Agree', value: 3 },
-    { label: 'Disagree', value: 2 },
-    { label: 'Strongly Disagree', value: 1 },
 ];
 
 enum SurveyStatus {
@@ -29,9 +29,6 @@ type SurveyComponentProps = {
     status: SurveyStatus;
 };
 
-type SurveyResponses = {
-    [questionId: string]: number;
-};
 
 type SurveyQuestion = {
     indexQuestion: string; // Added indexQuestion to the type
@@ -226,7 +223,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
                                                             key={choice.label}
                                                             color={'#6E51FF'}
                                                             variant={getButtonVariant(q.indexQuestion, choice.value)}
-                                                            onClick={() => handleAnswer(q.indexQuestion, choice.value)} >{choice.label}</Button>
+                                                            onClick={() => handleAnswer(q.indexQuestion, choice.value)} ><Text size={'xs'}>{choice.label}</Text></Button>
                                                     ))}
                                                 </SimpleGrid>
                                             </Box>

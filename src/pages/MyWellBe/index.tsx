@@ -164,7 +164,6 @@ const MyWellBePage = () => {
               <Skeleton height={8} mt={6} radius="xl" />
               <Skeleton height={8} mt={6} radius="xl" />
               <Skeleton height={8} mt={6} radius="xl" />
-
             </>
           )}
         </Text>

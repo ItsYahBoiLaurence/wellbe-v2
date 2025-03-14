@@ -23,6 +23,7 @@ const SignInPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm<LoginRequest>({
     defaultValues: {
       email: '',
@@ -34,7 +35,17 @@ const SignInPage = () => {
     try {
       await login(data.email, data.password);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error:', error?.code);
+      if (error?.code) {
+        setError("password", {
+          type: "manual",
+          message: "Invalid email or password!"
+        })
+        setError("email", {
+          type: "manual",
+          message: "Invalid email or password!"
+        })
+      }
       // Optionally display an error message to the user
     }
   };
