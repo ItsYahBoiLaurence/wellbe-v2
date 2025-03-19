@@ -16,10 +16,9 @@ type ApiResponse = {
 
 export const generateQuestions = async (
     email: string,
-    company: string
 ): Promise<Question[] | undefined> => {
     try {
-        const params = { email, company };
+        const params = { email };
         const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
 
         return response.data.response.questions;
@@ -72,11 +71,10 @@ interface ResponseMessage {
     adviceMessage: AdviceMessage;
 }
 
-export const getLatestAdvice = async (email: string, company: string): Promise<ResponseMessage | undefined> => {
+export const getLatestAdvice = async (email: string): Promise<ResponseMessage | undefined> => {
     try {
         const params = {
-            email,
-            company
+            email
         }
         const response = await api.get('/api/engine/latestAdvise', { params })
         return response.data as ResponseMessage;

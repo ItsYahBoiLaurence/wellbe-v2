@@ -60,7 +60,6 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         try {
             await signOut(auth);
             setUser(null);
-            localStorage.removeItem("CLIENT_USER_COMPANY");
             queryClient.removeQueries();
             queryClient.clear();
             localStorage.removeItem("CLIENT_TOKEN");
@@ -95,11 +94,6 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
-            const userData = await currentUser?.getIdTokenResult()
-            if (userData) {
-                localStorage.setItem('CLIENT_USER_COMPANY', userData?.claims.company as string)
-            }
-            console.log(localStorage.getItem('CLIENT_USER_COMPANY'))
         });
         return () => unsubscribe();
     }, []);

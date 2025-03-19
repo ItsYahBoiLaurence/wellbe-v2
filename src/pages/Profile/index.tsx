@@ -7,18 +7,16 @@ import { modals } from "@mantine/modals"
 
 
 const ProfilePage = () => {
-  const company = localStorage.getItem("CLIENT_USER_COMPANY") as string
 
   const { user, logout } = useContext(AuthenticationContext)
 
   const [userProfile, setUserProfile] = useState({})
   const [userImage, setUserImage] = useState("")
 
-  const fetchUserProfile = async (email: string | undefined, company: string) => {
+  const fetchUserProfile = async (email: string | undefined) => {
     try {
       const params = {
-        email: email,
-        company: company
+        email: email
       }
       await api.get('/api/employee/profile', { params }).then((response) => {
         setUserProfile(response.data)
@@ -41,7 +39,7 @@ const ProfilePage = () => {
       onCancel: () => { },
       onConfirm: () => logout(),
     });
-  useEffect(() => { fetchUserProfile(user?.email as string, company) }, [])
+  useEffect(() => { fetchUserProfile(user?.email as string) }, [])
 
   useEffect(() => {
     if (userProfile.FirstName) {

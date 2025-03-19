@@ -63,9 +63,6 @@ const MyWellBePage = () => {
   const { user } = authContext;
   const [tip, setTip] = useState<string>("");
 
-  const company = localStorage.getItem("CLIENT_USER_COMPANY")
-
-
   const [visible, setVisible] = useState(true);
   const [completed, setCompleted] = useState(false)
   const [sessionNumber, setSessionNumber] = useState(0)
@@ -73,8 +70,7 @@ const MyWellBePage = () => {
   const getSession = async () => {
     try {
       const params = {
-        email: user?.email,
-        company: company
+        email: user?.email
       }
       const response = await api.get('/api/engine/latestSession', { params })
       if (response.status === 200) {
@@ -92,13 +88,12 @@ const MyWellBePage = () => {
     setCompleted(session)
   }
 
-
   useEffect(() => {
-    const getLatestAdvice = async (email: string, company: string): Promise<void> => {
+    const getLatestAdvice = async (email: string): Promise<void> => {
       try {
         // Prepare the email and company values to be passed as query parameters
         const response = await api.get<ResponseMessage>("/api/engine/latestAdvise", {
-          params: { email, company },  // Send email and company as query params
+          params: { email },  // Send email and company as query params
         });
 
         // Extract the advice text from the response and set it in the state
@@ -111,12 +106,10 @@ const MyWellBePage = () => {
     };
     // Check if user email is available before making the request
     if (user?.email) {
-      getLatestAdvice(user.email, company as string);
+      getLatestAdvice(user.email);
     }
     isSessionCompleted();
-  }, [user?.email, company]); // Re-run the effect when user email or company changes
-
-
+  }, [user?.email]); // Re-run the effect when user email or company changes
 
   return (
     <Container

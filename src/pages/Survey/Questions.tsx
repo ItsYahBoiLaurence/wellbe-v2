@@ -63,7 +63,6 @@ interface ResponseMessage {
 
 
 const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) => {
-    const company = localStorage.getItem("CLIENT_USER_COMPANY") as string
 
     const authContext = useContext(AuthenticationContext);
     const { user } = authContext;
@@ -86,9 +85,9 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         }
     }
 
-    const generateQuestions = async (email: string, company: string) => {
+    const generateQuestions = async (email: string) => {
         try {
-            const params = { email, company };
+            const params = { email };
             const response = await api.get<ApiResponse>('/api/engine/generateQuestions', { params });
             return response.data
         } catch (error) {
@@ -119,7 +118,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         const fetchData = async () => {
             try {
                 setIsLoading(true)
-                const questions = await generateQuestions(currentUser, company);
+                const questions = await generateQuestions(currentUser);
                 setIsLoading(false)
                 if (questions?.response?.questions) {
                     console.log(questions?.response.questions)

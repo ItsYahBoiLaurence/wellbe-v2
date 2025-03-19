@@ -10,14 +10,12 @@ import { useNavigate } from "react-router-dom"
 
 export const NoQuestions = () => {
 
-    const company = localStorage.getItem("CLIENT_USER_COMPANY")
     const { user } = useContext(AuthenticationContext)
     const navigate = useNavigate()
     const [status, setStatus] = useState(false)
     const [message, setMessage] = useState("")
     const generateReport = async () => {
         const params = {
-            company: company,
             email: user?.email
         }
         try {
