@@ -72,10 +72,10 @@ const MyWellBePage = () => {
       const params = {
         email: user?.email
       }
-      const response = await api.get('/api/engine/latestSession', { params })
+      const response = await api.get('/api/engine/latestBatch', { params })
       if (response.status === 200) {
-        setSessionNumber(response.data.statusCurrentSession)
-        return response.data.statusCurrentSession
+        setSessionNumber(response.data.statusCurrentBatch)
+        return response.data.statusCurrentBatch
       }
     } catch (error) {
       console.log(error)
