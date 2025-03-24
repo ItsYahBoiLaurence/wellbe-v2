@@ -60,7 +60,13 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     };
 
     const userRegister = async (email: string, password: string, firstname: string, lastname: string, company: string, department: string) => {
-        const data = { email, firstName: firstname, lastName: lastname, company, department };
+        const data = {
+            email: email,
+            firstName: firstname,
+            lastName: lastname,
+            company: company,
+            department: department,
+        };
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const token = await userCredential.user.getIdToken();
