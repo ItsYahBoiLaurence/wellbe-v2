@@ -11,19 +11,13 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     userRegister: (email: string, password: string, company: string, department: string, firstname: string, lastname: string) => Promise<void>;
-};
+}
 
 export const AuthenticationContext = createContext<AuthContextType>({
     user: null,
-    login: async () => {
-        throw new Error('login method not implemented');
-    },
-    logout: async () => {
-        throw new Error('logout method not implemented');
-    },
-    userRegister: async () => {
-        throw new Error('register method not implemented')
-    }
+    login: async () => { throw new Error('login method not implemented'); },
+    logout: async () => { throw new Error('logout method not implemented'); },
+    userRegister: async () => { throw new Error('register method not implemented'); }
 });
 
 const EXCLUDED_PATHS = [
@@ -41,12 +35,10 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Login function
     const login = async (email: string, password: string): Promise<void> => {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredentials.user.getIdToken();
-
             localStorage.setItem('CLIENT_TOKEN', token);
             setUser(userCredentials.user);
         } catch (error) {
@@ -55,33 +47,27 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
     };
 
-    // Logout function
     const logout = async (): Promise<void> => {
         try {
             await signOut(auth);
             setUser(null);
-            queryClient.removeQueries();
-            queryClient.clear();
-            localStorage.removeItem("CLIENT_TOKEN");
+            queryClient.clear(); // Clear all queries and cache
+            localStorage.clear();
         } catch (error) {
             console.error("Logout failed", error);
             throw error;
         }
     };
 
-    // Registration function
     const userRegister = async (email: string, password: string, firstname: string, lastname: string, company: string, department: string) => {
-        const data = {
-            email: email,
-            firstName: firstname,
-            lastName: lastname,
-            company: company,
-            department: department,
-        };
+        const data = { email, firstName: firstname, lastName: lastname, company, department };
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            if (userCredential) {
-                await api.post('/api/employee/register/', data);
+            const token = await userCredential.user.getIdToken();
+            localStorage.setItem('CLIENT_TOKEN', token);
+            const response = await api.post('/api/employee/register/', data)
+            console.log(response)
+            if (response.status) {
                 navigate('/sign-in');
             }
         } catch (error) {
@@ -90,15 +76,11 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
     };
 
-    // Synchronize user state with Firebase Auth
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setUser(currentUser);
-        });
+        const unsubscribe = onAuthStateChanged(auth, setUser);
         return () => unsubscribe();
     }, []);
 
-    // Redirect to appropriate paths based on user authentication state
     useEffect(() => {
         if (!user && !EXCLUDED_PATHS.includes(location.pathname)) {
             navigate("/get-started");

@@ -8,6 +8,7 @@ import api from '../../api/api';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../api/firebaseServices/firebaseConfig';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 type SignUpReq = {
   firstname: string,
@@ -16,6 +17,7 @@ type SignUpReq = {
   password: string,
   company: string,
   department: string,
+  role: string
 }
 
 const SignUpPage = () => {
@@ -34,40 +36,83 @@ const SignUpPage = () => {
       email: new URLSearchParams(location.search).get('email') || "",
       password: '',
       company: new URLSearchParams(location.search).get('company') || "",
-      department: new URLSearchParams(location.search).get('department') || ""
+      department: new URLSearchParams(location.search).get('department') || "",
+      role: new URLSearchParams(location.search).get("role") || ""
     },
   });
 
-  const handleSignup = async (data) => {
-    const payload = {
-      email: data.email,
-      firstName: data.firstname,
-      lastName: data.lastname,
-      company: data.company,
-      department: data.department,
-    }
 
+
+  const handleSignup = async (data: any) => {
+    let userCredential; // Will hold our created user so we can delete if needed
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
-      if (userCredential) {
-        await api.post('/api/employee/register/', payload)
-        navigate('/sign-in')
+      // 1. Create the Firebase user
+      userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const token = await userCredential.user.getIdToken();
+      localStorage.setItem('CLIENT_TOKEN', token);
+      const userId = userCredential.user.uid;
+
+      // 2. Prepare payloads for extra data and custom claims
+      const payload = {
+        email: data.email,
+        firstName: data.firstname,
+        lastName: data.lastname,
+        company: data.company,
+        department: data.department,
+        role: data.role,
+      };
+      const customClaimPayload = {
+        company: data.company,
+        role: data.role,
+        uid: userId,
+      };
+
+      // 3. Set custom claims via your API
+      const claimsResponse = await axios.post('https://admin-api-zeta-eight.vercel.app/api/registerUser', customClaimPayload);
+      if (claimsResponse.status !== 200) {
+        throw new Error('Failed to set custom claims');
       }
-    }
-    catch (error) {
+
+      // 4. Register the employee details via your API
+      const registerResponse = await api.post('/api/employee/register', payload);
+      if (registerResponse.status !== 200) {
+        throw new Error('Employee registration failed');
+      }
+
+      // All steps succeeded: you could now navigate to sign in or show success.
+      // navigate('/sign-in');
+    } catch (error: any) {
+      // If we have already created a Firebase user, remove it to rollback
+      if (userCredential) {
+        try {
+          await userCredential.user.delete();
+          console.log('Rolled back user creation due to an error.');
+        } catch (deleteError) {
+          console.error('Failed to rollback user creation:', deleteError);
+        }
+      }
+
+      // Handle known Firebase Auth errors to show user-friendly messages
       if (error?.code === 'auth/email-already-in-use') {
         setError('email', {
           type: 'manual',
-          message: 'Email already in use!'
-        })
+          message: 'Email already in use!',
+        });
       } else if (error?.code === 'auth/weak-password') {
         setError('password', {
           type: 'manual',
-          message: 'Password too weak!'
-        })
+          message: 'Password too weak!',
+        });
+      } else {
+        console.error('Signup error:', error);
       }
     }
-  }
+  };
+
+
+
+
+
 
   return (
     <Container
