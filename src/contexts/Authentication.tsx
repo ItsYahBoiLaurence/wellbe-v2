@@ -77,6 +77,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
             lastName: lastname,
             company: company,
             department: department,
+            role: "employee"
         };
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
