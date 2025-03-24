@@ -21,7 +21,6 @@ type SignUpReq = {
 }
 
 const SignUpPage = () => {
-  const navigate = useNavigate()
   const location = useLocation()
 
   const {
