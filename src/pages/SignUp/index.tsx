@@ -26,7 +26,7 @@ const SignUpPage = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-
+    setError,
   } = useForm<SignUpReq>({
     defaultValues: {
       firstname: new URLSearchParams(location.search).get('firstName') || "",
@@ -55,12 +55,12 @@ const SignUpPage = () => {
       }
     }
     catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
+      if (error?.code === 'auth/email-already-in-use') {
         setError('email', {
           type: 'manual',
           message: 'Email already in use!'
         })
-      } else if (error.code === 'auth/weak-password') {
+      } else if (error?.code === 'auth/weak-password') {
         setError('password', {
           type: 'manual',
           message: 'Password too weak!'
