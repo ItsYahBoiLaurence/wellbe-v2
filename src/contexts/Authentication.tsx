@@ -11,13 +11,17 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     userRegister: (email: string, password: string, company: string, department: string, firstname: string, lastname: string) => Promise<void>;
+    willSetuser: (data: any) => void
 }
 
 export const AuthenticationContext = createContext<AuthContextType>({
     user: null,
     login: async () => { throw new Error('login method not implemented'); },
     logout: async () => { throw new Error('logout method not implemented'); },
-    userRegister: async () => { throw new Error('register method not implemented'); }
+    userRegister: async () => { throw new Error('register method not implemented'); },
+    willSetuser: async () => {
+        throw new Error('register method not implemented');
+    }
 });
 
 const EXCLUDED_PATHS = [
@@ -34,6 +38,10 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const [user, setUser] = useState<User | null>(null);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const willSetuser = (data: any) => {
+        setUser(data)
+    }
 
     const login = async (email: string, password: string): Promise<void> => {
         try {
@@ -85,7 +93,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, setUser);
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (!user && !EXCLUDED_PATHS.includes(location.pathname)) {
@@ -96,7 +104,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     }, [user, location.pathname, navigate]);
 
     return (
-        <AuthenticationContext.Provider value={{ user, login, logout, userRegister }}>
+        <AuthenticationContext.Provider value={{ user, login, logout, userRegister, willSetuser }}>
             <Stack style={{ width: "100vw", height: "100vh" }}>
                 {children}
             </Stack>

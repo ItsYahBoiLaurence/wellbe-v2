@@ -9,6 +9,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../api/firebaseServices/firebaseConfig';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { AuthenticationContext } from '../../contexts/Authentication';
+import { useContext } from 'react';
 
 type SignUpReq = {
   firstname: string,
@@ -21,8 +23,10 @@ type SignUpReq = {
 }
 
 const SignUpPage = () => {
+  const authContext = useContext(AuthenticationContext);
+  const { logout } = authContext;
   const location = useLocation()
-
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -47,8 +51,11 @@ const SignUpPage = () => {
     try {
       // 1. Create the Firebase user
       userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const token = await userCredential.user.getIdToken();
-      localStorage.setItem('CLIENT_TOKEN', token);
+
+      const token = await userCredential.user.getIdToken()
+      const email = userCredential.user.email
+      localStorage.setItem('CLIENT_TOKEN', token)
+      localStorage.setItem('email', email as string)
       const userId = userCredential.user.uid;
 
       // 2. Prepare payloads for extra data and custom claims
@@ -79,7 +86,7 @@ const SignUpPage = () => {
       }
 
       // All steps succeeded: you could now navigate to sign in or show success.
-      // navigate('/sign-in');
+      logout()
     } catch (error: any) {
       // If we have already created a Firebase user, remove it to rollback
       if (userCredential) {
