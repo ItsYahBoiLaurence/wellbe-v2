@@ -66,7 +66,7 @@ const MyWellBePage = () => {
   const [visible, setVisible] = useState(true);
   const [completed, setCompleted] = useState(false)
   const [sessionNumber, setSessionNumber] = useState(0)
-
+  const [isFirstTime, setIsFirstTime] = useState()
   const getSession = async () => {
     console.log(user?.email)
     try {
@@ -81,12 +81,13 @@ const MyWellBePage = () => {
       }
     } catch (error) {
       console.log(error)
+
     }
   }
 
   const isSessionCompleted = async () => {
     const sessionNumber = await getSession()
-    const session = sessionNumber === 5 ? false : true
+    const session = sessionNumber === 0 ? false : true
     setCompleted(session)
   }
 
@@ -111,7 +112,7 @@ const MyWellBePage = () => {
       getLatestAdvice(user.email);
     }
     isSessionCompleted();
-  }, [user?.email]); // Re-run the effect when user email or company changes
+  }, [user?.email]); // Re-run the effect when user email or company change
 
   return (
     <Container
@@ -196,9 +197,15 @@ const MyWellBePage = () => {
           <Text>Schedule a Call</Text>
         </PrimaryButton>
       </Card>
-      <Flex pos={'relative'} w={'100%'} h={"100%"} direction={'column'} p={'xl'} mt={32} style={{ backgroundColor: '#f2f7fe' }}>
-        {completed && (
-          <OverlayResult>
+
+      {sessionNumber == 0 || sessionNumber == 5 ? (
+        <Paper w={'100%'} py={'md'}>
+          <DomainResult />
+        </Paper>
+      ) : (
+        <Paper w={'100%'} withBorder my="lg">
+          <Flex direction={'column'} gap={'lg'}>
+
             <RingProgress
               style={{
                 alignSelf: 'center'
@@ -216,14 +223,11 @@ const MyWellBePage = () => {
               ]}
             />
             <Text ta={'center'}>Complete {5 - sessionNumber} more surveys to reveal your insights!</Text>
-            <PrimaryButton onClick={() => setVisible((v) => !v)} mt={43} ta={'center'} disabled={completed}>
-              <Text>View Result</Text>
-            </PrimaryButton>
-          </OverlayResult>
-        )}
 
-        <DomainResult sessionCount={5} />
-      </Flex>
+          </Flex>
+        </Paper>
+      )
+      }
     </Container >
   );
 };

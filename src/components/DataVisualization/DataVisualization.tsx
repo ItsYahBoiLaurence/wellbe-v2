@@ -19,42 +19,34 @@ export const OverlayResult = ({ children }) => {
     )
 
 }
-export const DomainResult = ({ sessionCount }) => {
-
-
+export const DomainResult = () => {
     const [report, setReport] = useState([])
     const { user } = useContext(AuthenticationContext)
+
+    const generate = async () => {
+        console.log(user?.email)
+        const params = {
+            email: user?.email,
+        };
+        try {
+            await api.get('/api/engine/generateReport', { params }).then((response) => {
+            })
+        } catch (error) {
+            console.error("Error generating report:", error);
+        }
+    }
     const generateReport = async () => {
         console.log(user?.email)
         const params = {
             email: user?.email,
         };
-        if (sessionCount == 5) {
-            try {
-                const response = await api.get('/api/engine/generateReport', { params })
-                if (response.status === 403) {
-                    console.log(response)
-                }
-
-                if (response.data.statusCode === 202) {
-                    console.log(response)
-                }
-
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        if (sessionCount == 5) {
-            try {
-                await api.get('/api/engine/latestComparison', { params }).then((response) => {
-                    setReport(response.data.data)
-                    console.log(response.data.data)
-                })
-            } catch (error) {
-                console.error("Error generating report:", error);
-            }
+        try {
+            await api.get('/api/engine/latestComparison', { params }).then((response) => {
+                setReport(response.data.data)
+                console.log(response.data.data)
+            })
+        } catch (error) {
+            console.error("Error generating report:", error);
         }
     };
 
@@ -69,30 +61,24 @@ export const DomainResult = ({ sessionCount }) => {
     }
 
     useEffect(() => {
+        generate()
         generateReport();
     }, []); // Empty dependency array ensures this runs only once when the component mounts.
 
     return (
-        sessionCount != 5 ? (
-            <Paper shadow="xs" radius="lg" p="xl">
-                <Text ta={"center"}>No Report!</Text>
-            </Paper>
-        ) : (
-            <SimpleGrid cols={2}>
-                {report && report.map(({ label, value, difference }) => (
-                    <Paper shadow="xs" radius="lg" p="md">
-                        <Flex direction={"column"}>
-                            <Avatar radius="sm" size="lg" src={setIcon(difference)} />
-                            <Text size="">{label}</Text>
-                            <Flex direction={"row"} justify={'space-between'} >
-                                <Text size="lg" >{value}%</Text>
-                                <Text size="lg" c={setTextColor(difference)}>{difference}%</Text>
-                            </Flex>
+        <SimpleGrid cols={2} w={'100%'}>
+            {report && report.map(({ label, value, difference }) => (
+                <Paper shadow="xs" radius="lg" p="md">
+                    <Flex direction={"column"}>
+                        <Avatar radius="sm" size="lg" src={setIcon(difference)} />
+                        <Text size="">{label}</Text>
+                        <Flex direction={"row"} justify={'space-between'} >
+                            <Text size="lg" >{value}%</Text>
+                            <Text size="lg" c={setTextColor(difference)}>{difference}%</Text>
                         </Flex>
-                    </Paper>
-                ))}
-            </SimpleGrid >
-
-        )
+                    </Flex>
+                </Paper>
+            ))}
+        </SimpleGrid >
     );
 };
