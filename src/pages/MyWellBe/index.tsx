@@ -68,6 +68,7 @@ const MyWellBePage = () => {
   const [sessionNumber, setSessionNumber] = useState(0)
 
   const getSession = async () => {
+    console.log(user?.email)
     try {
       const params = {
         email: user?.email
@@ -75,6 +76,7 @@ const MyWellBePage = () => {
       const response = await api.get('/api/engine/latestSet', { params })
       if (response.status === 200) {
         setSessionNumber(response.data.statusCurrentSet)
+        console.log(response.data.statusCurrentSet)
         return response.data.statusCurrentSet
       }
     } catch (error) {
