@@ -51,15 +51,12 @@ const SignInPage = () => {
   };
 
   return (
-    <Container
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 16,
-        paddingBottom: 16,
-        height: '100vh',
-        width: '90vw'
-      }}
+    <Box
+      maw={{ base: '100%', md: '768px' }}
+      w={'768px'}
+      p={'md'}
+      mx={'auto'}
+      h={'90vh'}
     >
       <PageHeader previousPage="/get-started" />
       <Box
@@ -116,7 +113,7 @@ const SignInPage = () => {
           </Box>
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
 
