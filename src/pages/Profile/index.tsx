@@ -48,8 +48,13 @@ const ProfilePage = () => {
     return;
   }, [userProfile])
   return (
-    <Center>
-      <Stack gap='xs' align='center'>
+    <Box
+      maw={{ base: '100%', md: '768px' }}
+      w={'768px'}
+      p={'md'}
+      mx={'auto'}
+    >
+      <Stack justify='center' h={'100%'}>
         <Box>
           <Avatar
             size={80}
@@ -63,11 +68,6 @@ const ProfilePage = () => {
           </Text>
         </Box>
         <Stack
-          h={450}
-          w={'90vw'}
-          bg="var(--mantine-color-body)"
-          align="stretch"
-          justify="center"
         >
           <Paper withBorder p="md">
             <Flex justify={'space-between'}>
@@ -101,7 +101,7 @@ const ProfilePage = () => {
           </Paper>
         </Stack>
       </Stack>
-    </Center>
+    </Box>
   );
 };
 
