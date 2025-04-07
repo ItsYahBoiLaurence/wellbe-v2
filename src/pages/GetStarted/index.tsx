@@ -1,6 +1,6 @@
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
-import { Box, Container, Title } from '@mantine/core';
+import { Box, Container, Stack, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import AppLogo from '../../assets/logo.svg';
@@ -38,9 +38,10 @@ const Slide = (props: SlideProps) => {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <Container style={{ height: '100%' }}>
+        <Container style={{ height: '100%' }} >
           <Box
             style={{
+
               display: 'flex',
               height: '100%',
               justifyContent: 'space-between',
@@ -52,43 +53,45 @@ const Slide = (props: SlideProps) => {
               position: 'relative',
             }}
           >
-            <Box>
-              {props.title && (
-                <Title
-                  order={1}
-                  pt={108}
-                  style={{ textAlign: 'center', maxWidth: 277 }}
-                >
-                  {props.title}
-                </Title>
-              )}
-              {props.subtitle && (
-                <Title
-                  order={5}
-                  pt={19}
-                  style={{
-                    textAlign: 'center',
-                    maxWidth: 289,
-                  }}
-                >
-                  {props.subtitle}
-                </Title>
-              )}
-            </Box>
-            {props.hasAction && (
-              <Box component={Link} to="/sign-in" style={{ width: '100%' }}>
-                <SecondaryButton
-                  style={{
-                    height: 48,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    width: '100%',
-                  }}
-                >
-                  Get started
-                </SecondaryButton>
+            <Stack h={'100%'} justify='space-between'>
+              <Box>
+                {props.title && (
+                  <Title
+                    order={1}
+                    pt={108}
+                    style={{ textAlign: 'center', maxWidth: 277 }}
+                  >
+                    {props.title}
+                  </Title>
+                )}
+                {props.subtitle && (
+                  <Title
+                    order={5}
+                    pt={19}
+                    style={{
+                      textAlign: 'center',
+                      maxWidth: 289,
+                    }}
+                  >
+                    {props.subtitle}
+                  </Title>
+                )}
               </Box>
-            )}
+              {props.hasAction && (
+                <Box component={Link} to="/sign-in" style={{ width: '100%' }}>
+                  <SecondaryButton
+                    style={{
+                      height: 48,
+                      fontSize: 16,
+                      fontWeight: 600,
+                      width: '100%',
+                    }}
+                  >
+                    Get started
+                  </SecondaryButton>
+                </Box>
+              )}
+            </Stack>
           </Box>
         </Container>
         <Box
