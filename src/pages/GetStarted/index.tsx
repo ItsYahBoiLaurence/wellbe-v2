@@ -87,7 +87,7 @@ const Slide = (props: SlideProps) => {
                       width: '100%',
                     }}
                   >
-                    Get started
+                    Get starteds
                   </SecondaryButton>
                 </Box>
               )}
