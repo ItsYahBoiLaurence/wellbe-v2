@@ -28,11 +28,10 @@ export const NoQuestions = () => {
                 setStatus(true)
                 setMessage(response.data.message)
             }
-
-            navigate('/')
         } catch (error) {
             console.log(error)
         }
+        navigate('/')
     }
 
     return (
