@@ -1,21 +1,26 @@
 import { createContext, useState, PropsWithChildren, useEffect } from "react";
 import { auth } from "../api/firebaseServices/firebaseConfig";
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import queryClient from "../queryClient";
+import { LoginCreds } from "../types";
+
+type Token = {
+    access_token: string
+}
 
 interface AuthContextType {
-    user: User | null;
+    token: string | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
-    userRegister: (email: string, password: string, company: string, department: string, firstname: string, lastname: string) => Promise<void>;
+    userRegister: (credentials: LoginCreds) => Promise<void>;
     willSetuser: (data: any) => void
 }
 
 export const AuthenticationContext = createContext<AuthContextType>({
-    user: null,
+    token: null,
     login: async () => { throw new Error('login method not implemented'); },
     logout: async () => { throw new Error('logout method not implemented'); },
     userRegister: async () => { throw new Error('register method not implemented'); },
@@ -35,20 +40,19 @@ const EXCLUDED_PATHS = [
 ];
 
 export const Authentication = ({ children }: PropsWithChildren<{}>) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
     const location = useLocation();
     const navigate = useNavigate();
 
     const willSetuser = (data: any) => {
-        setUser(data)
+        setToken(data)
     }
 
     const login = async (email: string, password: string): Promise<void> => {
         try {
-            const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-            const token = await userCredentials.user.getIdToken();
-            localStorage.setItem('CLIENT_TOKEN', token);
-            setUser(userCredentials.user);
+            const response = await api.post('/auth/sign-in', { email, password })
+            localStorage.setItem("CLIENT_TOKEN", response.data.access_token)
+            navigate('/')
         } catch (error) {
             console.error("Login failed", error);
             throw error;
@@ -57,8 +61,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
 
     const logout = async (): Promise<void> => {
         try {
-            await signOut(auth);
-            setUser(null);
+            setToken(null);
             queryClient.clear(); // Clear all queries and cache
             localStorage.clear();
         } catch (error) {
@@ -67,19 +70,9 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
     };
 
-    const userRegister = async (email: string, password: string, firstname: string, lastname: string, company: string, department: string) => {
-        const data = {
-            email: email,
-            firstName: firstname,
-            lastName: lastname,
-            company: company,
-            department: department,
-        };
+    const userRegister = async (credentials: LoginCreds) => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const token = await userCredential.user.getIdToken();
-            localStorage.setItem('CLIENT_TOKEN', token);
-            const response = await api.post('/api/employee/register/', data)
+            const response = await api.post('user', credentials)
             console.log(response)
             if (response.status) {
                 navigate('/sign-in');
@@ -91,20 +84,17 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     };
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, setUser);
-        return () => unsubscribe();
-    }, [user]);
-
-    useEffect(() => {
-        if (!user && !EXCLUDED_PATHS.includes(location.pathname)) {
-            navigate("/get-started");
-        } else if (user && EXCLUDED_PATHS.includes(location.pathname)) {
-            navigate("/");
+        const user_token = localStorage.getItem("CLIENT_TOKEN")
+        if (user_token) setToken(user_token)
+        if (!token && !EXCLUDED_PATHS.includes(location.pathname)) {
+            navigate('/sign-in')
+            return
         }
-    }, [user, location.pathname, navigate]);
+        if (token && EXCLUDED_PATHS.includes(location.pathname)) navigate('/')
+    })
 
     return (
-        <AuthenticationContext.Provider value={{ user, login, logout, userRegister, willSetuser }}>
+        <AuthenticationContext.Provider value={{ token, login, logout, userRegister, willSetuser }}>
             <Stack style={{ width: "100vw", height: "100vh" }}>
                 {children}
             </Stack>

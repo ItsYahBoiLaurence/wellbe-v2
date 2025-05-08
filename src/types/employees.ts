@@ -1,13 +1,8 @@
-import { Company } from './companies';
-import { Department } from './departments';
-
-export type Employee = {
-  id: string;
-  cognitoSub: string;
-  firstName?: string;
-  lastName?: string;
-  employeeId?: string;
-  department?: Department;
-  company: Company;
-  contactNumber?: string;
-};
+export type LoginCreds = {
+  email: string
+  first_name: string
+  last_name: string
+  department_name: string
+  company: string
+  password: string
+}
