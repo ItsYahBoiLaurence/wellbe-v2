@@ -4,27 +4,26 @@ import { AuthenticationContext } from '../../contexts/Authentication';
 import api from '../../api/api';
 import { IconChevronRight } from '@tabler/icons-react';
 import { modals } from "@mantine/modals"
+import { UserDetials } from '../../types';
+
+
 
 
 const ProfilePage = () => {
 
-  const { user, logout } = useContext(AuthenticationContext)
+  const { logout } = useContext(AuthenticationContext)
 
-  const [userProfile, setUserProfile] = useState({})
-  const [userImage, setUserImage] = useState("")
-
-  const fetchUserProfile = async (email: string | undefined) => {
+  const [userProfile, setUserProfile] = useState<UserDetials>()
+  const getUser = async () => {
     try {
-      const params = {
-        email: email
-      }
-      await api.get('/api/employee/profile', { params }).then((response) => {
-        setUserProfile(response.data)
-      })
+      const user_details = await api.get('user')
+      console.log(user_details.data)
+      setUserProfile(user_details.data)
     } catch (error) {
-      throw error
+      console.log(error)
     }
   }
+
   const openModal = () =>
     modals.openConfirmModal({
       title: 'Logout Confirmation',
@@ -39,14 +38,11 @@ const ProfilePage = () => {
       onCancel: () => { },
       onConfirm: () => logout(),
     });
-  useEffect(() => { fetchUserProfile(user?.email as string) }, [])
 
   useEffect(() => {
-    if (userProfile.FirstName) {
-      setUserImage(userProfile.FirstName)
-    }
-    return;
-  }, [userProfile])
+    getUser()
+  }, [])
+
   return (
     <Box
       maw={{ base: '100%', md: '768px' }}
@@ -61,7 +57,7 @@ const ProfilePage = () => {
             radius={120}
             mx="auto"
           >
-            {userImage[0]}
+            {userProfile?.first_name[0]}
           </Avatar>
           <Text ta="center" fw={500} mt="md">
             User Profile
@@ -72,25 +68,25 @@ const ProfilePage = () => {
           <Paper withBorder p="md">
             <Flex justify={'space-between'}>
               <Text>First name</Text>
-              <Text>{userProfile.FirstName}</Text>
+              <Text>{userProfile?.first_name}</Text>
             </Flex>
           </Paper>
           <Paper shadow="xs" withBorder p="md">
             <Flex justify={'space-between'}>
               <Text>Last name</Text>
-              <Text>{userProfile.LastName}</Text>
+              <Text>{userProfile?.last_name}</Text>
             </Flex>
           </Paper>
           <Paper shadow="xs" withBorder p="md">
             <Flex justify={'space-between'}>
               <Text>Email</Text>
-              <Text>{userProfile.email}</Text>
+              <Text>{userProfile?.email}</Text>
             </Flex>
           </Paper>
           <Paper shadow="xs" withBorder p="md">
             <Flex justify={'space-between'}>
               <Text>Company</Text>
-              <Text>{userProfile.Company}</Text>
+              <Text>{userProfile?.department.company.name}</Text>
             </Flex>
           </Paper>
           <Paper shadow="xs" withBorder p="md" onClick={openModal} style={{ cursor: 'pointer' }}>
