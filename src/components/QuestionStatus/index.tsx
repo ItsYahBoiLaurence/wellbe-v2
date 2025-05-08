@@ -49,7 +49,7 @@ export const NoQuestions = () => {
                             </Center>
                         }
                     />
-                    <Text ta={"center"} mb={10}>You already answered all the questions. Well done!</Text>
+                    <Text ta={"center"} mb={10}>No question available!</Text>
                     <PrimaryButton style={{ alignSelf: "center" }} w={'50%'} onClick={generateReport}>Go Back!</PrimaryButton>
                 </Paper>
             </Center>
