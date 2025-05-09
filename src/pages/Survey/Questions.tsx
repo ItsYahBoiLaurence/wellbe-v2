@@ -11,6 +11,7 @@ import { NoQuestions } from '../../components/QuestionStatus';
 import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import { PrimaryButton } from '../../components/Buttons/Buttons';
 import { useQueries, useQuery } from '@tanstack/react-query';
+import queryClient from '../../queryClient';
 
 const choices = [
     { label: 'Strongly Disagree', value: 1 },
@@ -130,6 +131,7 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
         try {
             const res = await api.post('/employee/question', data.answers)
             console.log(res.data)
+            queryClient.removeQueries({ queryKey: ['question'], exact: true })
             changeStateFunction(SurveyStatus.COMPLETED);
         } catch (error) {
             console.log(error)
@@ -138,7 +140,9 @@ const SurveyComponent = ({ changeStateFunction, status }: SurveyComponentProps) 
 
     const { data: questions, isLoading: isFetchingQuestions, isError: noAvailableQuestion } = useQuery({
         queryKey: ['question'],
-        queryFn: async () => getQuestions()
+        queryFn: async () => getQuestions(),
+        staleTime: 0,
+        refetchOnMount: 'always'
     })
 
     if (isFetchingQuestions || isSubmitting) return (
