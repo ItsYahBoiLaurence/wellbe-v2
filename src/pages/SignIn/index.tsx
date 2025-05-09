@@ -106,11 +106,6 @@ const SignInPage = () => {
           >
             Log in
           </PrimaryButton>
-          <Box component={Link} to="/forgot-password" style={{ width: '100%' }}>
-            <TextButton style={{ width: '100%' }}>
-              Having trouble with your account?
-            </TextButton>
-          </Box>
         </Box>
       </Box>
     </Box>

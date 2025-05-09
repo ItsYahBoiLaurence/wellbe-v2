@@ -44,8 +44,6 @@ const SignUpPage = () => {
     },
   });
 
-
-
   const handleSignup = async (data: any) => {
     let userCredential; // Will hold our created user so we can delete if needed
     try {
