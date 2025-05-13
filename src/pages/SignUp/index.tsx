@@ -65,14 +65,7 @@ const SignUpPage = () => {
 
   const handleSignup = async (data: any) => {
     try {
-      const res = await api.post('user', {
-        email: data.email,
-        first_name: data.firstname,
-        last_name: data.lastname,
-        department_name: data.department_name,
-        company: data.company,
-        password: data.password,
-      })
+      const res = await api.post('user', data)
       console.log(res.data)
       navigate('/')
       return res.data
