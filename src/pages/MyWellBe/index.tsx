@@ -13,7 +13,8 @@ import {
   LoadingOverlay,
   SimpleGrid,
   Avatar,
-  Center
+  Center,
+  Paper
 } from '@mantine/core';
 import { OutlineButton, PrimaryButton } from '../../components/Buttons/Buttons';
 import { useQuery } from '@tanstack/react-query';
@@ -157,7 +158,7 @@ const Tip = () => {
   }
 
   if (noTip) {
-    return <>answer question so that tips will appear</>
+    return <Card p={'md'} ><Text ta={'center'}>Start answering questions to get daily Tips!</Text></Card>
   }
 
   return (

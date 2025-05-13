@@ -11,92 +11,72 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/Authentication';
 import { useContext } from 'react';
+import CryptoJS from 'crypto-js'
+import { useSearchParams } from 'react-router-dom';
 
-type SignUpReq = {
-  firstname: string,
-  lastname: string,
-  email: string,
-  password: string,
-  company: string,
-  department: string,
-  role: string
-}
 
 const SignUpPage = () => {
+
+  const decryptData = (ciphertext: string) => {
+    try {
+      const dataParam = decodeURIComponent(ciphertext)
+      const bytes = CryptoJS.AES.decrypt(dataParam, import.meta.env.VITE_JWT_SECRET!);
+      const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+      const decryptedData = JSON.parse(decryptedText);
+      console.log(decryptedData);
+
+      if (!decryptedText) {
+        throw new Error("Decryption failed: resulting text is empty.");
+      }
+
+      return JSON.parse(decryptedText);
+    } catch (error) {
+      console.error("Decryption error:", error);
+      return null;
+    }
+  };
+
   const authContext = useContext(AuthenticationContext);
   const { logout } = authContext;
   const location = useLocation()
   const navigate = useNavigate()
+  const params = new URLSearchParams(window.location.search)
+
+  // const data = "U2FsdGVkX1+6gWTjLuj+VIp7/DkQHC1JOrYA37eMF6nviBzvIvgbRWXPB/U52+ZlMeUv8MzpY83wkcQTu36NcukvR246hCZ1Vel/xvAZ3g0nRxc9ZChmNZtaKfC612IEgCrxXg4yJnLa5oT1C+/NA8wDOuEbl2THBsxd29PyGTg9cleoyU4VyrOVATGYJm+GYd3FvPfpgPRBwVDAIDmsDnAE3KMa3VYxeZ6myeRKYbOTSVOO/oHK8SuuuDf3XEN9"
+  // const dcrypt = decryptData(data)
+
+
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<SignUpReq>({
+  } = useForm({
     defaultValues: {
-      firstname: new URLSearchParams(location.search).get('firstName') || "",
-      lastname: new URLSearchParams(location.search).get('lastName') || "",
-      email: new URLSearchParams(location.search).get('email') || "",
+      email: params.get('email'),
+      firstname: params.get('firstname'),
+      lastname: params.get('lastname'),
+      department_name: params.get('department'),
+      company: params.get('company'),
       password: '',
-      company: new URLSearchParams(location.search).get('company') || "",
-      department: new URLSearchParams(location.search).get('department') || "",
-      role: new URLSearchParams(location.search).get("role") || ""
     },
   });
 
   const handleSignup = async (data: any) => {
-    let userCredential; // Will hold our created user so we can delete if needed
     try {
-      // 1. Create the Firebase user
-      userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-
-      const token = await userCredential.user.getIdToken()
-      const email = userCredential.user.email
-      localStorage.setItem('CLIENT_TOKEN', token)
-      localStorage.setItem('email', email as string)
-      const userId = userCredential.user.uid;
-
-      // 2. Prepare payloads for extra data and custom claims
-      const payload = {
+      const res = await api.post('user', {
         email: data.email,
-        firstName: data.firstname,
-        lastName: data.lastname,
+        first_name: data.firstname,
+        last_name: data.lastname,
+        department_name: data.department_name,
         company: data.company,
-        department: data.department,
-        role: data.role,
-      };
-      const customClaimPayload = {
-        company: data.company,
-        role: data.role,
-        uid: userId,
-      };
-
-      // 3. Set custom claims via your API
-      const claimsResponse = await axios.post('https://admin-api-zeta-eight.vercel.app/api/registerUser', customClaimPayload);
-      if (claimsResponse.status !== 200) {
-        throw new Error('Failed to set custom claims');
-      }
-
-      // 4. Register the employee details via your API
-      const registerResponse = await api.post('/api/employee/register', payload);
-      if (registerResponse.status !== 200) {
-        throw new Error('Employee registration failed');
-      }
-
-      // All steps succeeded: you could now navigate to sign in or show success.
-      logout()
+        password: data.password,
+      })
+      console.log(res.data)
+      navigate('/')
+      return res.data
     } catch (error: any) {
-      // If we have already created a Firebase user, remove it to rollback
-      if (userCredential) {
-        try {
-          await userCredential.user.delete();
-          console.log('Rolled back user creation due to an error.');
-        } catch (deleteError) {
-          console.error('Failed to rollback user creation:', deleteError);
-        }
-      }
-
-      // Handle known Firebase Auth errors to show user-friendly messages
       if (error?.code === 'auth/email-already-in-use') {
         setError('email', {
           type: 'manual',
@@ -112,11 +92,6 @@ const SignUpPage = () => {
       }
     }
   };
-
-
-
-
-
 
   return (
     <Container
@@ -147,6 +122,7 @@ const SignUpPage = () => {
           </Box>
 
           <TextInput
+            label={<Text>Email</Text>}
             placeholder="Email Address"
             style={{ marginBottom: 16 }}
             {...register('email', {
@@ -161,6 +137,7 @@ const SignUpPage = () => {
           />
 
           <TextInput
+            label={<Text>First Name</Text>}
             placeholder="First Name"
             style={{ marginBottom: 16 }}
             {...register('firstname', {
@@ -171,6 +148,7 @@ const SignUpPage = () => {
           />
 
           <TextInput
+            label={<Text>Last Name</Text>}
             placeholder="Last Name"
             style={{ marginBottom: 16 }}
             {...register('lastname', {
@@ -181,6 +159,7 @@ const SignUpPage = () => {
           />
 
           <PasswordInput
+            label={<Text>Password</Text>}
             placeholder="Password"
             style={{ marginBottom: 24 }}
             {...register('password', {

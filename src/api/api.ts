@@ -4,7 +4,7 @@ import { auth } from "./firebaseServices/firebaseConfig";
 import queryClient from "../queryClient";
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/',
+    baseURL: 'http://localhost:3000/',
     // withCredentials: true,  // Uncomment this if you want to send cookies with requests
     headers: {
         'Content-Type': 'application/json', // Ensure that we are sending JSON data
