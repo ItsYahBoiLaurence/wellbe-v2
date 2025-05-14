@@ -163,6 +163,7 @@ const Tip = () => {
 
   return (
     <Card p='md'>
+      <Text ta={'center'} fw={700}> </Text>
       <Text>{tipSet.tip}</Text>
     </Card>
   )
@@ -249,12 +250,15 @@ const MyWellBePage = () => {
       </Format >
     )
   }
-
   return (
     <Format>
       <Stack gap="md">
         <Card>
-          <Text>{holisticTip.advice}</Text>
+          <Stack>
+            <Text ta={'center'} fw={700}>🌱 Your Holistic Tip for the Week:</Text>
+
+            <Text>{holisticTip.advice}</Text>
+          </Stack>
         </Card>
         <Card>
           <Wellbeing />
