@@ -37,7 +37,7 @@ const SignUpPage = () => {
   };
 
   const authContext = useContext(AuthenticationContext);
-  const { logout } = authContext;
+  const { userRegister } = authContext;
   const location = useLocation()
   const navigate = useNavigate()
   const params = new URLSearchParams(window.location.search)
@@ -55,8 +55,8 @@ const SignUpPage = () => {
   } = useForm({
     defaultValues: {
       email: params.get('email'),
-      firstname: params.get('firstname'),
-      lastname: params.get('lastname'),
+      first_name: params.get('firstname'),
+      last_name: params.get('lastname'),
       department_name: params.get('department'),
       company: params.get('company'),
       password: '',
@@ -64,11 +64,10 @@ const SignUpPage = () => {
   });
 
   const handleSignup = async (data: any) => {
+    console.log(data)
     try {
-      const res = await api.post('user', data)
-      console.log(res.data)
+      await userRegister(data)
       navigate('/')
-      return res.data
     } catch (error: any) {
       if (error?.code === 'auth/email-already-in-use') {
         setError('email', {
@@ -133,10 +132,10 @@ const SignUpPage = () => {
             label={<Text>First Name</Text>}
             placeholder="First Name"
             style={{ marginBottom: 16 }}
-            {...register('firstname', {
+            {...register('first_name', {
               required: 'First name is required',
             })}
-            error={errors.firstname?.message}
+            error={errors.first_name?.message}
             disabled
           />
 
@@ -144,10 +143,10 @@ const SignUpPage = () => {
             label={<Text>Last Name</Text>}
             placeholder="Last Name"
             style={{ marginBottom: 16 }}
-            {...register('lastname', {
+            {...register('last_name', {
               required: 'Last name is required',
             })}
-            error={errors.lastname?.message}
+            error={errors.last_name?.message}
             disabled
           />
 
