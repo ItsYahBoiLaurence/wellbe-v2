@@ -14,20 +14,17 @@ import {
   SimpleGrid,
   Avatar,
   Center,
-  Paper
+  Group,
 } from '@mantine/core';
-import { OutlineButton, PrimaryButton } from '../../components/Buttons/Buttons';
+import { PrimaryButton } from '../../components/Buttons/Buttons';
 import { useQuery } from '@tanstack/react-query';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import api from '../../api/api';
-import ThumbDownIcon from '../../components/icons/ThumbDownIcon';
-import ThumbUpIcon from '../../components/icons/ThumbUpIcon';
-import MyWellBeIllustration from '../../assets/my-wellbe-illustration.png';
-import queryClient from '../../queryClient';
-import { useNavigate } from 'react-router-dom';
-import Decreased from '../../assets/decrease.png'
-import Increased from '../../assets/increase.png'
-import Maintained from '../../assets/maintained.png'
+import MyWellBeIllustration from '../../assets/vector.jpg';
+import Decreased from '../../assets/low.svg'
+import Increased from '../../assets/high.svg'
+import Maintained from '../../assets/mid.svg'
+import { IconHeartHandshake } from '@tabler/icons-react';
 
 
 type CardProps = BoxProps & ElementProps<'div', keyof BoxProps>;
@@ -60,9 +57,6 @@ const Format = ({ children }: { children: ReactNode }) => {
       }}
     >
       <Image src={MyWellBeIllustration} height={254} mt={24} />
-      <Title order={2} mt={32} style={{ textAlign: 'center' }}>
-        Hello there!
-      </Title>
       {children}
     </Container>
   )
@@ -70,7 +64,6 @@ const Format = ({ children }: { children: ReactNode }) => {
 
 const Progress = ({ refetch }) => {
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { data: userProgress, isLoading: isFetchingProgress, isError: noProgressData } = useQuery({
     queryKey: ['batch-status'],
     queryFn: async () => {
@@ -96,7 +89,7 @@ const Progress = ({ refetch }) => {
 
   console.log(user_progress)
 
-  const label = user_progress !== 5 ? `Complete ${5 - user_progress} more surveys to reveal your comprehensive insights! ` : "You’re all set! Tap View Results to see your comprehensive insights! "
+  const label = user_progress !== 5 ? `Complete ${5 - user_progress} more sets to reveal your comprehensive insights! ` : "You’re all set! Tap View Results to see your comprehensive insights! "
 
 
   const generateWellbeing = async () => {
@@ -112,7 +105,7 @@ const Progress = ({ refetch }) => {
   }
 
   return (
-    <Flex direction={'column'} gap={'lg'} >
+    <Flex direction={'column'} gap={'lg'} align={'center'} >
       <LoadingOverlay
         visible={loading}
         zIndex={1000}
@@ -136,19 +129,25 @@ const Progress = ({ refetch }) => {
         ]}
       />
       <Text ta={'center'}>{label}</Text>
-      <Button color='violet' disabled={!is_completed} onClick={generateWellbeing}>View Result</Button>
+
+      <Button px={'56px'} color='violet' disabled={!is_completed} onClick={generateWellbeing}>View Result</Button>
+
     </Flex>
   )
 
 }
-
 const Tip = () => {
   const { data: tipSet, isLoading: isfetchingTip, isError: noTip } = useQuery({
     queryKey: ['tip'],
     queryFn: async () => {
       const res = await api.get('/tip/latest')
       console.log(res.data)
-      return res.data
+      const user = await api.get('user')
+      console.log(user.data)
+      return {
+        ...res.data,
+        ...user.data
+      }
     },
     refetchOnMount: 'always'
   })
@@ -160,37 +159,46 @@ const Tip = () => {
   if (noTip) {
     return <Card p={'md'} ><Text ta={'center'}>Start answering questions to get daily Tips!</Text></Card>
   }
+  console.log("=======")
+  console.log(tipSet.first_name)
+  console.log("=======")
 
   return (
-    <Card p='md'>
-      <Text ta={'center'} fw={700}> </Text>
-      <Text>{tipSet.tip}</Text>
-    </Card>
+    <>
+      <Stack align='center'>
+        <Text size='24px' fw={700} >Great job {tipSet.first_name}!</Text>
+        <Text>Here’s your Wellbe result for today</Text>
+      </Stack>
+      <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='lg'>
+        <Stack>
+          <Group>
+            <IconHeartHandshake />
+            <Text size='24px' fw={700}>WellbeTips</Text>
+          </Group>
+
+          <Text>{tipSet.tip}</Text>
+        </Stack>
+      </Box>
+    </>
+
   )
 }
 
 
-const HolisticTip = ({ tip }: { tip: string }) => {
-  return <></>
-}
-
-
-
 const Domain = ({ label, score }) => {
-
-
-  const Image = score >= 1 && score <= 22 ? Decreased : score >= 23 && score <= 76 ? Maintained : score >= 77 && score <= 100 ? Increased : "NA"
-
+  const Image = score >= 1 && score <= 22 ? Decreased : score >= 23 && score <= 76 ? Increased : score >= 77 && score <= 100 ? Maintained : "NA"
   return (
     <Center>
-      <Stack>
-        <Avatar src={Image} size={'lg'} radius={'none'}>
-          {Image}
-        </Avatar>
-        <Text>{label}</Text>
-        <Text>{score}%</Text>
-      </Stack>
-    </Center>
+      <Box w={'100%'}>
+        <Stack justify='start' gap={'sm'} >
+          <Avatar src={Image} size={'lg'} radius={'none'}>
+            {Image}
+          </Avatar>
+          <Text>{label}</Text>
+          <Text size={'xl'} fw={700}>{score}%</Text>
+        </Stack>
+      </Box>
+    </Center >
   )
 }
 
@@ -217,8 +225,8 @@ const Wellbeing = () => {
   )
 }
 
-const MyWellBePage = () => {
 
+const MyWellBePage = () => {
   const { data: holisticTip, isLoading: isFetchingHolistic, isError: noHolisticTip, refetch: refetchHolistic } = useQuery({
     queryKey: ['holistic-tip'],
     queryFn: async () => {
@@ -233,10 +241,8 @@ const MyWellBePage = () => {
   }
 
   if (noHolisticTip) {
-    console.log("No Holistic Tip")
     return (
       <Format>
-        <Text mt={16}>Here’s your Wellbe result for today</Text>
         <Stack my="md">
           <Tip />
           <Card>
@@ -256,47 +262,18 @@ const MyWellBePage = () => {
       </Format >
     )
   }
-
-  console.log(holisticTip.advice)
-
-  const match = holisticTip.advice.match(
-    /^(.*?)\n+- \*\*Character\*\*: (.*?)\n+- \*\*Career\*\*: (.*?)\n+- \*\*Contentment\*\*: (.*?)\n+- \*\*Connectedness\*\*: (.*?)\n+"([^"]+)"/s
-  );
-
-  if (match) {
-    const [
-      _,
-      feedback,
-      character,
-      career,
-      contentment,
-      connectedness,
-      quotation
-    ] = match;
-
-    const result = {
-      feedback: feedback.trim(),
-      character: character.trim(),
-      career: career.trim(),
-      contentment: contentment.trim(),
-      connectedness: connectedness.trim(),
-      quotation: quotation.trim()
-    };
-
-  }
-
   return (
     <Format>
-      <Stack gap="md">
-        <Card>
+      <Stack gap="md" my={'md'}>
+        <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
           <Stack>
-            <Text ta={'center'} fw={700}>🌱 Your Holistic Tip for the Week:</Text>
+            <Text ta={'center'} size='20px' fw={700}>🌱 Your Holistic Tip for the Week:</Text>
             <Text>{holisticTip.advice}</Text>
           </Stack>
-        </Card>
-        <Card>
+        </Box>
+        <Box px={'38px'} py="24px" w='100%'>
           <Wellbeing />
-        </Card>
+        </Box>
       </Stack>
     </Format>
   );

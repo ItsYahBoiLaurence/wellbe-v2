@@ -16,8 +16,8 @@ import queryClient from '../../queryClient';
 const choices = [
     { label: 'Strongly Disagree', value: 1 },
     { label: 'Disagree', value: 2 },
-    { label: 'Strongly Agree', value: 4 },
     { label: 'Agree', value: 3 },
+    { label: 'Strongly Agree', value: 4 },
 ];
 
 enum SurveyStatus {

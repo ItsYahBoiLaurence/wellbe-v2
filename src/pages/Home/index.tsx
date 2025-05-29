@@ -9,7 +9,7 @@ import { PrimaryButton } from '../../components/Buttons/Buttons';
 import { Link } from 'react-router-dom';
 import { Carousel } from '@mantine/carousel';
 import { CarouselPaper } from '../../components/Paper/CustomPaper';
-import ORANGEBG from '../../assets/green_road.jpeg'
+import ORANGEBG from '../../assets/forest.jpg'
 
 const HomePage = () => {
   return (
@@ -55,7 +55,7 @@ const HomePage = () => {
             style={{ display: 'flex', justifyContent: 'center', zIndex: 50 }}
           >
             <Link to={`/survey`}>
-              <PrimaryButton>Start Your Well-being Journey</PrimaryButton>
+              <PrimaryButton>Start answering your well-being</PrimaryButton>
             </Link>
           </Box>
 
