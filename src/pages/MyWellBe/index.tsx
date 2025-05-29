@@ -170,6 +170,12 @@ const Tip = () => {
 }
 
 
+const HolisticTip = ({ tip }: { tip: string }) => {
+  return <></>
+}
+
+
+
 const Domain = ({ label, score }) => {
 
 
@@ -250,13 +256,41 @@ const MyWellBePage = () => {
       </Format >
     )
   }
+
+  console.log(holisticTip.advice)
+
+  const match = holisticTip.advice.match(
+    /^(.*?)\n+- \*\*Character\*\*: (.*?)\n+- \*\*Career\*\*: (.*?)\n+- \*\*Contentment\*\*: (.*?)\n+- \*\*Connectedness\*\*: (.*?)\n+"([^"]+)"/s
+  );
+
+  if (match) {
+    const [
+      _,
+      feedback,
+      character,
+      career,
+      contentment,
+      connectedness,
+      quotation
+    ] = match;
+
+    const result = {
+      feedback: feedback.trim(),
+      character: character.trim(),
+      career: career.trim(),
+      contentment: contentment.trim(),
+      connectedness: connectedness.trim(),
+      quotation: quotation.trim()
+    };
+
+  }
+
   return (
     <Format>
       <Stack gap="md">
         <Card>
           <Stack>
             <Text ta={'center'} fw={700}>🌱 Your Holistic Tip for the Week:</Text>
-
             <Text>{holisticTip.advice}</Text>
           </Stack>
         </Card>
