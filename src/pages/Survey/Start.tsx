@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { PageHeader } from '../../components/PageHeader';
-import BG from '../../assets/startJourney.jpeg'
+import BG from '../../assets/start_journey.png'
 
 
 enum SurveyStatus {
