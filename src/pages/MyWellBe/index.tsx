@@ -240,21 +240,11 @@ const MyWellBePage = () => {
     return <>Fetching...</>
   }
 
-  if (noHolisticTip) {
+  if (!noHolisticTip) {
     return (
       <Format>
         <Stack my="md">
           <Tip />
-          <Card>
-            <Title order={3}>Wellbe Consultants</Title>
-            <Text mt={22}>
-              For well-being planning and advice, our friends at Positive Workplace
-              are more than willing to share their expertise.
-            </Text>
-            <PrimaryButton mt={43}>
-              <Text>Schedule a Call</Text>
-            </PrimaryButton>
-          </Card>
           <Card>
             <Progress refetch={refetchHolistic} />
           </Card>
