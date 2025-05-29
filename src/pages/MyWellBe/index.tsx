@@ -240,7 +240,7 @@ const MyWellBePage = () => {
     return <>Fetching...</>
   }
 
-  if (!noHolisticTip) {
+  if (noHolisticTip) {
     return (
       <Format>
         <Stack my="md">
