@@ -4,9 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import api from "../../api/api"
 import { useEffect } from "react"
-
-
-
+import queryClient from "../../queryClient"
 
 export default function Index() {
     const navigate = useNavigate()
@@ -16,17 +14,6 @@ export default function Index() {
         navigate(-1)
         return
     }
-
-    useEffect(() => {
-        const updateMessage = async (id) => {
-            try {
-                await api.patch(`/inbox/${id}/read`)
-            } catch (e) {
-                console.log(e)
-            }
-        }
-        updateMessage(id)
-    }, [])
 
     const [tag, item_id] = id.split("-")
 
@@ -38,7 +25,18 @@ export default function Index() {
         }
     })
 
-
+    useEffect(() => {
+        console.log(id)
+        const updateMessage = async (id) => {
+            try {
+                await api.patch(`/inbox/${id}/read`)
+                queryClient.invalidateQueries({ queryKey: ['tips'], exact: true })
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        updateMessage(item_id)
+    }, [])
 
     if (isError) return <>error...</>
     if (isLoading) return <>loading...</>
