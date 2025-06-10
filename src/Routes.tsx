@@ -10,6 +10,7 @@ import SignInPage from './pages/SignIn';
 import SignUpPage from './pages/SignUp';
 import SurveyPage from './pages/Survey';
 import SurveyComplete from './pages/Survey/Completed';
+import SingleMessage from './pages/SingleMessage'
 
 const Routes = () => {
   return useRoutes([
@@ -20,6 +21,7 @@ const Routes = () => {
         { path: '/', element: <HomePage /> },
         { path: '/my-wellbe', element: <MyWellBePage /> },
         { path: '/inbox', element: <InboxPage /> },
+        { path: '/inbox/:id', element: <SingleMessage /> },
         { path: '/profile', element: <ProfilePage /> },
       ],
     },
