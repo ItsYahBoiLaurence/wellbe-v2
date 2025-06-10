@@ -84,3 +84,5 @@ __pycache__/
 
 # React-specific static files
 /public/static/
+.vercel
+.vercel/*
