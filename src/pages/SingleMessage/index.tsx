@@ -1,10 +1,11 @@
-import { ScrollArea, Stack, Button, Container, Title, Text, Box } from "@mantine/core"
+import { ScrollArea, Stack, Button, Container, Title, Text, Box, TypographyStylesProvider } from "@mantine/core"
 import { IconChevronLeft } from "@tabler/icons-react"
 import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import api from "../../api/api"
 import { useEffect } from "react"
 import queryClient from "../../queryClient"
+import Loader from "../../components/Loader/Loader"
 
 export default function Index() {
     const navigate = useNavigate()
@@ -22,12 +23,14 @@ export default function Index() {
         queryFn: async () => {
             const res = await api.get(`/inbox/singleMessage`, { params: { tag, item_id } })
             return res.data
-        }
+        },
+        staleTime: 0,
+        cacheTime: 0
     })
 
     useEffect(() => {
         console.log(id)
-        const updateMessage = async (id) => {
+        const updateMessage = async (id: string) => {
             try {
                 await api.patch(`/inbox/${id}/read`)
                 queryClient.invalidateQueries({ queryKey: ['tips'], exact: true })
@@ -39,7 +42,7 @@ export default function Index() {
     }, [])
 
     if (isError) return <>error...</>
-    if (isLoading) return <>loading...</>
+    if (isLoading) return <Loader />
 
     console.log(data)
 
@@ -67,10 +70,14 @@ export default function Index() {
                     px={'md'}
                     mx={'auto'}
                 >
-                    <Stack gap={'lg'} mt={'md'}>
+                    <Stack gap={'lg'} my={'md'}>
                         <Title>{data.subject}</Title>
                         <Text size="sm" c="dimmed">{formatted}</Text>
-                        <Text>{data.body}</Text>
+                        <TypographyStylesProvider>
+                            <div
+                                dangerouslySetInnerHTML={{ __html: data.body }}
+                            />
+                        </TypographyStylesProvider>
                     </Stack>
                 </ScrollArea>
             </Container>
