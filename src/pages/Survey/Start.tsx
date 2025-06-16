@@ -1,10 +1,13 @@
-import { Box, Button, Container, Grid, Stack, Stepper, Text, Title } from '@mantine/core';
+import { Avatar, Box, Button, Center, Container, Grid, Group, Stack, Stepper, Text, Title } from '@mantine/core';
 import { IconChevronLeft, IconCircleX } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryIconButton } from '../../components/IconButton';
 import { PageHeader } from '../../components/PageHeader';
 import BG from '../../assets/start_journey.png'
+import { IconPencil, IconCheck, IconLock } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../api/api';
 
 
 enum SurveyStatus {
@@ -23,6 +26,59 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
     const handleSubmit = () => {
         changeStateFunction(SurveyStatus.IN_PROGRESS);
     };
+
+    const getCheckInIcon = (current_set, item_id, status) => {
+        if (item_id <= current_set) {
+            if (status) {
+                return <IconCheck style={{ color: 'white' }} />
+            }
+            return <IconPencil style={{ color: 'white' }} />
+        } else {
+            return <IconLock style={{ color: 'white' }} />
+        }
+    }
+
+
+    const getIconColor = (current_set, item_id, status) => {
+        if (item_id <= current_set) {
+            if (status) {
+                return "#A695FF"
+            }
+            return "#6B4EFF"
+        } else {
+            return "#A695FF"
+        }
+    }
+
+    const getCheckInLabel = (current_set, item_id, status) => {
+        if (item_id <= current_set) {
+            if (status) {
+                return "Done"
+            }
+            return "Todo"
+        } else {
+            return "Locked"
+        }
+    }
+
+    const isCurrent = (current_check_in, id) => {
+        if (current_check_in == id) return true
+        return false
+    }
+
+    const { data, isError, isLoading } = useQuery({
+        queryKey: ['user-checkin-progress'],
+        queryFn: async () => {
+            const res = await api.get('check-in/status')
+            return res.data
+        }
+    })
+
+    if (isError) return <Center>Error Loading...</Center>
+    if (isLoading) return <Center>Loading...</Center>
+
+    console.log(data)
+
     return (
         <Box style={{ height: '100%' }}>
             <Box
@@ -61,17 +117,19 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                 />
             </Box>
             <Container
+                maw={{ base: '100%', md: '768px' }}
+                w={'768px'}
                 style={(t) => ({
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    paddingTop: 32,
-                    paddingBottom: 32,
+                    paddingTop: 16,
+                    paddingBottom: 16,
                     borderBottom: `1px solid ${t.colors.gray[2]}`,
                 })}
             >
                 <Stack
-                    gap={0}
+                    gap={'md'}
                     style={{
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -79,16 +137,37 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                         paddingBottom: 32,
                     }}
                 >
-                    <Title
-                        order={2}
-                        style={{
-                            fontWeight: 500,
-                            marginBottom: 32,
-                            textAlign: 'center',
-                        }}
-                    >
-                        Start Your Well-being Journey with us.
-                    </Title>
+                    <Box ta={'center'}>
+                        <Text fw={700} size='lg'>Your Check-in Progress</Text>
+                        <Text>Track your journey across this Snapshot</Text>
+                    </Box>
+                    <Text fw={700}>Quick Checks</Text>
+                    <Group w={'100%'} grow justify='center' align='center'>
+                        {data.check_ins.map(({ id, check_in_date, status }) => (
+                            <Stack align='center' key={id} >
+                                <Text
+                                    c={'#6B4EFF'}
+                                    size={isCurrent(data.current_quick_check, id) ? 'md' : 'xs'}
+                                    fw={isCurrent(data.current_quick_check, id) ? 700 : undefined}
+                                >
+                                    {check_in_date}
+                                </Text>
+                                <Avatar
+                                    bg={getIconColor(data.current_quick_check, id, status)}
+                                    size={isCurrent(data.current_quick_check, id) ? 'lg' : undefined}
+                                >
+                                    {getCheckInIcon(data.current_quick_check, id, status)}
+                                </Avatar>
+                                <Text
+                                    size={isCurrent(data.current_quick_check, id) ? 'md' : 'xs'}
+                                    fw={isCurrent(data.current_quick_check, id) ? 700 : undefined}
+                                >
+                                    {getCheckInLabel(data.current_quick_check, id, status)}
+                                </Text>
+                            </Stack>
+                        ))
+                        }
+                    </Group>
                 </Stack>
             </Container>
             <Box
@@ -100,7 +179,7 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                     paddingBottom: 32,
                 }}
             >
-                <Button onClick={handleSubmit} size='xl'><Text size='xs'>Ready? Let's Start</Text></Button>
+                <Button onClick={handleSubmit} color='#6B4EFF' size='xl'><Text size='xs'>Ready? Let's Start Quick Check</Text></Button>
             </Box>
         </Box>
     );
