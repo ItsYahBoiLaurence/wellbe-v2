@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Center, Container, Grid, Group, Stack, Stepper, Text, Title } from '@mantine/core';
+import { Avatar, Box, Button, Center, Container, Flex, Grid, Group, Stack, Stepper, Text, Title } from '@mantine/core';
 import { IconChevronLeft, IconCircleX } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
@@ -20,6 +20,31 @@ type Props = {
     changeStateFunction: (status: SurveyStatus) => void;
     status: SurveyStatus;
 };
+
+const UserStatus = ({ onClick }) => {
+    const { data, isError, isLoading } = useQuery({
+        queryKey: ['DATA_CHECK_IN'],
+        queryFn: async () => {
+            const res = await api.get('/check-in')
+            return res.data
+        },
+    })
+
+    if (isError) return <Center>Error...</Center>
+    if (isLoading) return <Center>Loading...</Center>
+    console.log(data)
+    return (
+        <>
+            {data.has_pending_questions ? <Button onClick={onClick} color='#6B4EFF' size='xl'><Text size='xs'>Ready? Let's Start Quick Check</Text></Button> : (
+                <Flex maw={{ base: '100%', md: '768px' }}
+                    w={'768px'} direction={'row'} align={'center'} gap={'md'} p={'md'} bg={'#E6F4EA'} style={{ borderRadius: '8px' }}>
+                    <Avatar flex={.1} bg='green' color='white'><IconCheck /></Avatar>
+                    <Text flex={.9}>You're all caught up. Great job on prioritizing your well-being!</Text>
+                </Flex>
+            )}
+        </>
+    )
+}
 
 
 const SurveyStartPage = ({ changeStateFunction }: Props) => {
@@ -179,7 +204,8 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                     paddingBottom: 32,
                 }}
             >
-                <Button onClick={handleSubmit} color='#6B4EFF' size='xl'><Text size='xs'>Ready? Let's Start Quick Check</Text></Button>
+                <UserStatus onClick={handleSubmit} />
+
             </Box>
         </Box>
     );
