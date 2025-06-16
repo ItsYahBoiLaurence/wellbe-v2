@@ -15,8 +15,8 @@ import {
   Avatar,
   Center,
   Group,
+  List,
 } from '@mantine/core';
-import { PrimaryButton } from '../../components/Buttons/Buttons';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import api from '../../api/api';
@@ -24,8 +24,8 @@ import MyWellBeIllustration from '../../assets/vector.jpg';
 import Decreased from '../../assets/low.svg'
 import Increased from '../../assets/high.svg'
 import Maintained from '../../assets/mid.svg'
-import { IconHeartHandshake } from '@tabler/icons-react';
-
+import { IconHeartHandshake, IconCheck } from '@tabler/icons-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 type CardProps = BoxProps & ElementProps<'div', keyof BoxProps>;
 
@@ -43,6 +43,45 @@ export const Card = (props: CardProps) => (
     ]}
   />
 );
+
+const CheckInStatus = ({ onClick, disabled }: { onClick: () => {}, disabled: boolean }) => {
+  const navigate = useNavigate()
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['CHECKIN_STATUS'],
+    queryFn: async () => {
+      const res = await api.get('check-in')
+      return res.data
+    }
+  })
+
+  if (isError) return <>Error...</>
+  if (isLoading) return <>Loading...</>
+
+  console.log(data)
+
+  return (
+    <Stack>
+      {data.has_pending_questions
+        ? <Link to={`/survey`}>
+          <Button color='#6B4EFF' px={'lg'}>Proceed to next Quick Check</Button>
+        </Link>
+        : (
+          <Flex direction={'row'} align={'center'} gap={'md'} p={'md'} bg={'#E6F4EA'} style={{ borderRadius: '8px' }}>
+            <Avatar flex={.1} bg='green' color='white'><IconCheck /></Avatar>
+            <Text flex={.9}>You're all caught up. Great job on prioritizing your well-being!</Text>
+          </Flex>
+        )
+      }
+
+      {data.user_finished_the_batch
+        ? <Button px={'56px'} color='violet' onClick={onClick}>View My Wellbeing</Button>
+        : (
+          <Button variant='white' fullWidth c={'violet'} onClick={() => navigate('/survey')}>Check Your Progress</Button>
+        )
+      }
+    </Stack>
+  )
+}
 
 const Format = ({ children }: { children: ReactNode }) => {
   return (
@@ -77,7 +116,7 @@ const Progress = ({ refetch }) => {
 
   if (isFetchingProgress) return <>Loading...</>
 
-  if (noProgressData) return <>No Data Progress</>
+  if (noProgressData) return <Text ta={'center'}>No Data Progress</Text>
 
   console.log(userProgress)
 
@@ -130,8 +169,9 @@ const Progress = ({ refetch }) => {
       />
       <Text ta={'center'}>{label}</Text>
 
-      <Button px={'56px'} color='violet' disabled={!is_completed} onClick={generateWellbeing}>View Result</Button>
-
+      <Stack align='center'>
+        <CheckInStatus disabled={!is_completed} onClick={generateWellbeing} />
+      </Stack>
     </Flex>
   )
 

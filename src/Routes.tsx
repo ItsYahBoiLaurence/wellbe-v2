@@ -10,6 +10,9 @@ import SignInPage from './pages/SignIn';
 import SignUpPage from './pages/SignUp';
 import SurveyPage from './pages/Survey';
 import SurveyComplete from './pages/Survey/Completed';
+import SingleMessage from './pages/SingleMessage'
+import OnBoarding from './pages/OnBoarding'
+import Information from './pages/OnBoarding/OnBoardingScreen'
 
 const Routes = () => {
   return useRoutes([
@@ -20,6 +23,7 @@ const Routes = () => {
         { path: '/', element: <HomePage /> },
         { path: '/my-wellbe', element: <MyWellBePage /> },
         { path: '/inbox', element: <InboxPage /> },
+        { path: '/inbox/:id', element: <SingleMessage /> },
         { path: '/profile', element: <ProfilePage /> },
       ],
     },
@@ -46,6 +50,14 @@ const Routes = () => {
     {
       path: '/get-started',
       element: <GetStartedPage />,
+    },
+    {
+      path: '/on-boarding',
+      element: <OnBoarding />
+    },
+    {
+      path: '/on-boarding/information',
+      element: <Information />
     },
   ]);
 };
