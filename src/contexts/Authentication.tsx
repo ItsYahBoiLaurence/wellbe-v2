@@ -6,9 +6,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import queryClient from "../queryClient";
 import { LoginCreds } from "../types";
+import { useQuery } from "@tanstack/react-query";
 
-type Token = {
-    access_token: string
+type UserInformation = {
+    first_name: string
+    last_name: string
+    id: number
+    email: string
+    department_id: number
+    department: {
+        company: {
+            name: string
+        },
+        name: string
+    }
+
 }
 
 interface AuthContextType {
@@ -16,7 +28,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     userRegister: (credentials: LoginCreds) => Promise<void>;
-    willSetuser: (data: any) => void
+    userInfo: UserInformation | undefined;
 }
 
 export const AuthenticationContext = createContext<AuthContextType>({
@@ -24,9 +36,7 @@ export const AuthenticationContext = createContext<AuthContextType>({
     login: async () => { throw new Error('login method not implemented'); },
     logout: async () => { throw new Error('logout method not implemented'); },
     userRegister: async () => { throw new Error('register method not implemented'); },
-    willSetuser: async () => {
-        throw new Error('register method not implemented');
-    }
+    userInfo: undefined
 });
 
 const EXCLUDED_PATHS = [
@@ -44,9 +54,13 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const willSetuser = (data: any) => {
-        setToken(data)
-    }
+    const { data: userInfo } = useQuery<UserInformation>({
+        queryKey: ['userInformation'],
+        queryFn: async () => {
+            const res = await api.get('user')
+            return res.data
+        }
+    })
 
     const login = async (email: string, password: string): Promise<void> => {
         try {
@@ -93,8 +107,10 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         if (token && EXCLUDED_PATHS.includes(location.pathname)) navigate('/')
     })
 
+    console.log(userInfo)
+
     return (
-        <AuthenticationContext.Provider value={{ token, login, logout, userRegister, willSetuser }}>
+        <AuthenticationContext.Provider value={{ token, login, logout, userRegister, userInfo }}>
             <Stack style={{ width: "100vw", height: "100vh" }}>
                 {children}
             </Stack>

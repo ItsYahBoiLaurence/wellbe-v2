@@ -1,5 +1,5 @@
-import { Box, Button, Container, Grid, Stack, Text, Title } from '@mantine/core';
-import { IconChevronLeft } from '@tabler/icons-react';
+import { Box, Button, Container, Grid, Stack, Stepper, Text, Title } from '@mantine/core';
+import { IconChevronLeft, IconCircleX } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryIconButton } from '../../components/IconButton';
@@ -18,11 +18,11 @@ type Props = {
     status: SurveyStatus;
 };
 
+
 const SurveyStartPage = ({ changeStateFunction }: Props) => {
     const handleSubmit = () => {
         changeStateFunction(SurveyStatus.IN_PROGRESS);
     };
-
     return (
         <Box style={{ height: '100%' }}>
             <Box
@@ -89,23 +89,6 @@ const SurveyStartPage = ({ changeStateFunction }: Props) => {
                     >
                         Start Your Well-being Journey with us.
                     </Title>
-                    <Text style={{ marginBottom: 32, textAlign: 'center' }}>
-                        Make sure that you are in peace while answering some of our question.
-                    </Text>
-                    <Grid style={{ width: '100%' }}>
-                        <Grid.Col span={6}>
-                            <Text style={{ textAlign: 'center', fontWeight: 700 }}>
-                                5 Questions
-                            </Text>
-                            <Text style={{ textAlign: 'center' }}>Questions</Text>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                            <Text style={{ textAlign: 'center', fontWeight: 700 }}>
-                                Less than 5 mins
-                            </Text>
-                            <Text style={{ textAlign: 'center' }}>Duration</Text>
-                        </Grid.Col>
-                    </Grid>
                 </Stack>
             </Container>
             <Box

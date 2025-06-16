@@ -10,26 +10,21 @@ import { Authentication } from './contexts/Authentication'
 import { ModalsProvider } from '@mantine/modals';
 import '@mantine/notifications/styles.css';
 import { Notifications } from '@mantine/notifications';
-
+import '@mantine/carousel/styles.css';
 
 
 function App() {
   return (
     <BrowserRouter>
       <MantineProvider theme={theme} stylesTransform={emotionTransform}>
-
         <MantineEmotionProvider>
           <QueryClientProvider client={queryClient}>
-            {/* <AuthProvider> */}
-            {/* <ProfileProvider> */}
             <Authentication>
               <ModalsProvider>
                 <Notifications />
                 <Routes />
               </ModalsProvider>
             </Authentication>
-            {/* </ProfileProvider> */}
-            {/* </AuthProvider> */}
           </QueryClientProvider>
         </MantineEmotionProvider>
       </MantineProvider>
