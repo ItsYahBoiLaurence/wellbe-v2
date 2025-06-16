@@ -116,7 +116,7 @@ const Progress = ({ refetch }) => {
 
   if (isFetchingProgress) return <>Loading...</>
 
-  if (noProgressData) return <>No Data Progress</>
+  if (noProgressData) return <Text ta={'center'}>No Data Progress</Text>
 
   console.log(userProgress)
 

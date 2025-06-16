@@ -66,13 +66,14 @@ const InboxPage = () => {
 
   const flatTips = Tips.pages.flatMap((page) => page.data)
 
-  console.log(flatTips)
+  console.log(flatTips.length)
 
   return (
     <Container fluid style={{ margin: "0px", overflow: 'auto' }}>
       <Text ta={'center'} m="md">
         Inbox
       </Text>
+      {flatTips.length <= 0 && <Text ta={'center'} h={'100%'}>Inbox Empty</Text>}
       <List>
         <ScrollArea w={'100%'} h={'100%'}>
           {flatTips.map(({ id, subject, created_at, body, tag, opened }, index) => (
