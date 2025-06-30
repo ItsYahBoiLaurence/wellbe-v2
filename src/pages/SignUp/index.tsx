@@ -60,6 +60,7 @@ const SignUpPage = () => {
       department_name: params.get('department'),
       company: params.get('company'),
       password: '',
+      role: params.get('role') ?? undefined
     },
   });
 
