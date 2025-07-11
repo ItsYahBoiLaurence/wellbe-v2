@@ -47,6 +47,7 @@ const EXCLUDED_PATHS = [
     "/otp",
     "/forget-password",
     '/get-started',
+    '/change-password'
 ];
 
 export const Authentication = ({ children }: PropsWithChildren<{}>) => {

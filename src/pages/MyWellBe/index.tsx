@@ -27,6 +27,15 @@ import Maintained from '../../assets/mid.svg'
 import { IconHeartHandshake, IconCheck } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 
+interface TipsType {
+  career: string
+  character: string
+  contentment: string
+  connectedness: string
+  feedback: string
+  remarks: string
+}
+
 type CardProps = BoxProps & ElementProps<'div', keyof BoxProps>;
 
 export const Card = (props: CardProps) => (
@@ -265,6 +274,38 @@ const Wellbeing = () => {
   )
 }
 
+const TipSection = ({ result }: { result: any }) => {
+  console.log("----------------")
+  console.log(result)
+  console.log("----------------")
+  return (
+    <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
+      <Stack gap={'lg'}>
+        <Text ta={'center'} size='20px' fw={700}>🌱 Your Holistic Tip for the Week:</Text>
+        <Text>{result.feedback}</Text>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Character: </Text>
+          <Text>{result.character}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Career: </Text>
+          <Text>{result.career}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Connectedness: </Text>
+          <Text>{result.connectedness}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Contentment: </Text>
+          <Text>{result.contentment}</Text>
+        </Stack>
+
+        <Text fs={'italic'}>"{result.remarks}"</Text>
+      </Stack>
+    </Box>
+  )
+}
+
 
 const MyWellBePage = () => {
   const { data: holisticTip, isLoading: isFetchingHolistic, isError: noHolisticTip, refetch: refetchHolistic } = useQuery({
@@ -292,15 +333,35 @@ const MyWellBePage = () => {
       </Format >
     )
   }
+
+  const { advice } = holisticTip
+  console.log(typeof advice)
+
+  const remarksMatch = advice.match(/"([^"]+)"/);
+  const remarks = remarksMatch ? remarksMatch[1] : "";
+
+  const feedback = advice.split(/-\s\*\*Character\*\*:/)[0].trim();
+
+  const sections: Record<string, string> = {};
+  const sectionPattern = /-\s\*\*(\w+)\*\*:\s(.*?)(?=\s-\s\*\*|\s"|\.$)/gs;
+
+  let match;
+  while ((match = sectionPattern.exec(advice)) !== null) {
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    sections[key] = value;
+  }
+
+  const result = {
+    feedback,
+    ...sections,
+    remarks
+  };
+
   return (
     <Format>
       <Stack gap="md" my={'md'}>
-        <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
-          <Stack>
-            <Text ta={'center'} size='20px' fw={700}>🌱 Your Holistic Tip for the Week:</Text>
-            <Text>{holisticTip.advice}</Text>
-          </Stack>
-        </Box>
+        <TipSection result={result} />
         <Box px={'38px'} py="24px" w='100%'>
           <Wellbeing />
         </Box>

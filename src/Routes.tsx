@@ -13,6 +13,8 @@ import SurveyComplete from './pages/Survey/Completed';
 import SingleMessage from './pages/SingleMessage'
 import OnBoarding from './pages/OnBoarding'
 import Information from './pages/OnBoarding/OnBoardingScreen'
+import PasswordReset from './pages/Otp';
+import ForgotPasswordPage from './pages/ForgotPassword';
 
 const Routes = () => {
   return useRoutes([
@@ -59,6 +61,14 @@ const Routes = () => {
       path: '/on-boarding/information',
       element: <Information />
     },
+    {
+      path: '/change-password',
+      element: <PasswordReset />
+    },
+    {
+      path: '/forgot-password',
+      element: <ForgotPasswordPage />
+    }
   ]);
 };
 
