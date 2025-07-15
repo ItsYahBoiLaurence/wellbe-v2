@@ -185,6 +185,7 @@ const Progress = ({ refetch }) => {
   )
 
 }
+
 const Tip = () => {
   const { data: tipSet, isLoading: isfetchingTip, isError: noTip } = useQuery({
     queryKey: ['tip'],
@@ -233,7 +234,6 @@ const Tip = () => {
   )
 }
 
-
 const Domain = ({ label, score }) => {
   const Image = score >= 1 && score <= 22 ? Decreased : score >= 23 && score <= 76 ? Increased : score >= 77 && score <= 100 ? Maintained : "NA"
   return (
@@ -275,9 +275,6 @@ const Wellbeing = () => {
 }
 
 const TipSection = ({ result }: { result: any }) => {
-  console.log("----------------")
-  console.log(result)
-  console.log("----------------")
   return (
     <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
       <Stack gap={'lg'}>
@@ -300,7 +297,7 @@ const TipSection = ({ result }: { result: any }) => {
           <Text>{result.contentment}</Text>
         </Stack>
 
-        <Text fs={'italic'}>"{result.remarks}"</Text>
+        <Text fs={'italic'}>"{result.quote}"</Text>
       </Stack>
     </Box>
   )
@@ -334,34 +331,12 @@ const MyWellBePage = () => {
     )
   }
 
-  const { advice } = holisticTip
-  console.log(typeof advice)
-
-  const remarksMatch = advice.match(/"([^"]+)"/);
-  const remarks = remarksMatch ? remarksMatch[1] : "";
-
-  const feedback = advice.split(/-\s\*\*Character\*\*:/)[0].trim();
-
-  const sections: Record<string, string> = {};
-  const sectionPattern = /-\s\*\*(\w+)\*\*:\s(.*?)(?=\s-\s\*\*|\s"|\.$)/gs;
-
-  let match;
-  while ((match = sectionPattern.exec(advice)) !== null) {
-    const key = match[1].toLowerCase();
-    const value = match[2].trim();
-    sections[key] = value;
-  }
-
-  const result = {
-    feedback,
-    ...sections,
-    remarks
-  };
+  const { insight } = holisticTip
 
   return (
     <Format>
       <Stack gap="md" my={'md'}>
-        <TipSection result={result} />
+        <TipSection result={insight} />
         <Box px={'38px'} py="24px" w='100%'>
           <Wellbeing />
         </Box>

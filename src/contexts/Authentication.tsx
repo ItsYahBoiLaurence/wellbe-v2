@@ -77,7 +77,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const logout = async (): Promise<void> => {
         try {
             setToken(null);
-            queryClient.clear(); // Clear all queries and cache
+            queryClient.clear();
             localStorage.clear();
         } catch (error) {
             console.error("Logout failed", error);

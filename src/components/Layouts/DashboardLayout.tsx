@@ -26,7 +26,7 @@ const Mobile = () => {
         minHeight: '100vh',
       }}
     >
-      <AppShell.Header
+      {/* <AppShell.Header
         style={{
           position: 'relative',
           zIndex: 20,
@@ -38,7 +38,7 @@ const Mobile = () => {
         <Center style={{ height: '100%' }}>
           <img src={AppLogo} alt="logo" height={29} />
         </Center>
-      </AppShell.Header>
+      </AppShell.Header> */}
 
       <AppShell.Main
         style={{
