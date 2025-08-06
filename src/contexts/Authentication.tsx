@@ -1,6 +1,4 @@
 import { createContext, useState, PropsWithChildren, useEffect } from "react";
-import { auth } from "../api/firebaseServices/firebaseConfig";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -47,6 +45,7 @@ const EXCLUDED_PATHS = [
     "/otp",
     "/forget-password",
     '/get-started',
+    '/change-password'
 ];
 
 export const Authentication = ({ children }: PropsWithChildren<{}>) => {
@@ -76,7 +75,7 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
     const logout = async (): Promise<void> => {
         try {
             setToken(null);
-            queryClient.clear(); // Clear all queries and cache
+            queryClient.clear();
             localStorage.clear();
         } catch (error) {
             console.error("Logout failed", error);
@@ -106,8 +105,6 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
         if (token && EXCLUDED_PATHS.includes(location.pathname)) navigate('/')
     })
-
-    console.log(userInfo)
 
     return (
         <AuthenticationContext.Provider value={{ token, login, logout, userRegister, userInfo }}>

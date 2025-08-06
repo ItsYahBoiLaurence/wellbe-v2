@@ -1,101 +1,164 @@
-import { Box, Container, PinInput, Stack, Text, Title } from '@mantine/core';
-import { useMutation } from '@tanstack/react-query';
-import { Controller, useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { confirmSignup as confirmSignupApi } from '../../api/services/auth';
-import { PrimaryButton } from '../../components/Buttons/Buttons';
+// import { Container, Input, Text } from "@mantine/core";
+
+// export default function PasswordReset() {
+//   return (
+//     <Container
+//       maw={{ base: '100%', md: '768px' }}
+//       w={'768px'}
+//       p={'md'}
+//       mx={'auto'}
+//       h={'90vh'}
+//     >
+//       <Text>Password Reset</Text>
+//       <Input />
+//     </Container>
+//   )
+// }
+
+
+import { IconCheck, IconX } from '@tabler/icons-react';
+import { Box, Button, Center, Container, Group, Modal, PasswordInput, Progress, Stack, Text, Title } from '@mantine/core';
 import { PageHeader } from '../../components/PageHeader';
-import { ConfirmSignupRequest } from '../../types';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import api from '../../api/api';
+import { useDisclosure } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
 
-const OtpPage = () => {
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const email = params.get('email') as string;
+function PasswordRequirement({ meets, label }: { meets: boolean; label: string }) {
+  return (
+    <Text component="div" c={meets ? 'teal' : 'red'} mt={5} size="sm">
+      <Center inline>
+        {meets ? <IconCheck size={14} stroke={1.5} /> : <IconX size={14} stroke={1.5} />}
+        <Box ml={7}>{label}</Box>
+      </Center>
+    </Text>
+  );
+}
 
-  const { handleSubmit, control, formState } = useForm<ConfirmSignupRequest>({
+const requirements = [
+  { re: /[0-9]/, label: 'Includes number' },
+  { re: /[a-z]/, label: 'Includes lowercase letter' },
+  { re: /[A-Z]/, label: 'Includes uppercase letter' },
+  { re: /[$&+,:;=?@#|'<>.^*()%!-]/, label: 'Includes special symbol' },
+];
+
+function getStrength(password: string) {
+  let multiplier = password.length > 5 ? 0 : 1;
+
+  requirements.forEach((requirement) => {
+    if (!requirement.re.test(password)) {
+      multiplier += 1;
+    }
+  });
+
+  return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 0);
+}
+
+export default function PasswordStrength() {
+
+
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const encodedEmail = searchParams.get('data')
+
+  const email = encodedEmail ? atob(encodedEmail) : ""
+
+  const { register, handleSubmit, watch, formState: { isSubmitting, isSubmitSuccessful }, reset } = useForm({
+
     defaultValues: {
-      code: '',
-      email: decodeURIComponent(email),
-    },
-  });
+      email: email,
+      password: ""
+    }
+  })
 
-  const { mutate: confirmSignup } = useMutation({
-    mutationFn: (data: ConfirmSignupRequest) => confirmSignupApi(data),
-    onSuccess: (data) => {
-      if (data) navigate('/');
-    },
-  });
+  const [opened, { open, close }] = useDisclosure(isSubmitSuccessful);
 
-  const handleconfirmSignup = async (data: ConfirmSignupRequest) => {
-    confirmSignup(data);
-  };
+
+  const value = watch('password')
+  const strength = getStrength(value);
+  const checks = requirements.map((requirement, index) => (
+    <PasswordRequirement key={index} label={requirement.label} meets={requirement.re.test(value)} />
+  ));
+
+  const onsubmit = async (data) => {
+    try {
+      await api.post('/user/change-password', data)
+      reset()
+      open()
+    } catch (error) {
+      console.log(error)
+      notifications.show({
+        position: 'bottom-right',
+        color: 'red',
+        title: 'Error occured',
+        message: 'Something went wrong!',
+      })
+    }
+  }
+
+  const bars = Array(4)
+    .fill(0)
+    .map((_, index) => (
+      <Progress
+        styles={{ section: { transitionDuration: '0ms' } }}
+        value={
+          value.length > 0 && index === 0 ? 100 : strength >= ((index + 1) / 4) * 100 ? 100 : 0
+        }
+        key={index}
+        size={4}
+      />
+    ));
 
   return (
-    <Container
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 16,
-        paddingBottom: 80,
-        height: '100vh',
-      }}
-    >
-      <PageHeader previousPage="/sign-up" />
-      <Box
-        component="form"
-        display="flex"
-        onSubmit={handleSubmit(handleconfirmSignup)}
-        style={{
-          justifyContent: 'space-between',
-          height: '100%',
-          flexDirection: 'column',
-        }}
-      >
-        <Stack align="center" gap={0}>
-          <Stack
-            align="center"
-            gap={0}
-            style={{ paddingTop: 16, marginBottom: 32 }}
-          >
-            <Title order={3} style={{ marginTop: 0, marginBottom: 12 }}>
-              Authentication code
-            </Title>
-            <Text style={{ textAlign: 'center' }}>
-              Enter the 4-digit that we have sent to <b>{email}</b>
-            </Text>
+    <>
+      <Modal opened={opened} onClose={close} centered>
+        <Stack pb={'md'}>
+          <Stack gap={0} align="center" c={'teal'}>
+            <IconCheck size={'80px'} />
+            <Text fw={700}>Success!</Text>
           </Stack>
-          <Controller
-            name="code"
-            control={control}
-            rules={{
-              required: 'Code is required',
-              minLength: {
-                value: 6,
-                message: 'Code must be 6 characters',
-              },
-            }}
-            render={({ field }) => (
-              <PinInput
-                {...field}
-                length={6}
-                oneTimeCode
-                style={{ marginBottom: 16 }}
-              />
-            )}
-          />
+          <Text ta={'center'}>Your password has been updated! You can now use your new password the next time you log in. For your security, make sure not to share it with anyone.</Text>
+          <Button color='violet' onClick={() => navigate('/')}>Got it!</Button>
         </Stack>
-        <Box>
-          <PrimaryButton
-            disabled={!formState.isValid || !formState.isDirty}
-            type="submit"
-            style={{ width: '100%' }}
-          >
-            Continue
-          </PrimaryButton>
-        </Box>
-      </Box>
-    </Container>
+      </Modal>
+      <Container
+        maw={{ base: '100%', md: '768px' }}
+        w={'768px'}
+        p={'md'}
+        mx={'auto'}
+        h={'100vh'}
+      >
+        <Stack gap={'lg'} >
+          <PageHeader previousPage="/get-started" />
+          <Stack gap="sm">
+            <Title order={2}>Change your Password.</Title>
+            <Text>For your account's security, please enter your current password and choose a new one. Make sure your new password is strong.</Text>
+          </Stack>
+          <form onSubmit={handleSubmit(onsubmit)}>
+            <Stack align='end'>
+              <PasswordInput
+                {...register('password', {
+                  required: true
+                })}
+                placeholder="Your password"
+                label="Password"
+                required
+                w={'100%'}
+              />
+              <Box w={'100%'}>
+                <Group gap={5} grow mt="xs" mb="md">
+                  {bars}
+                </Group>
+                <PasswordRequirement label="Has at least 6 characters" meets={value.length > 5} />
+                {checks}
+              </Box>
+              <Button color='violet' size='xl' style={{ borderRadius: '8px' }} loading={isSubmitting} type='submit' disabled={strength === 100 ? false : true}>Reset Password</Button>
+            </Stack>
+          </form>
+        </Stack>
+      </Container>
+    </>
   );
-};
-
-export default OtpPage;
+}

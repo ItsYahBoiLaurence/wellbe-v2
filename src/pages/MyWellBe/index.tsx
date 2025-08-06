@@ -27,6 +27,15 @@ import Maintained from '../../assets/mid.svg'
 import { IconHeartHandshake, IconCheck } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 
+interface TipsType {
+  career: string
+  character: string
+  contentment: string
+  connectedness: string
+  feedback: string
+  remarks: string
+}
+
 type CardProps = BoxProps & ElementProps<'div', keyof BoxProps>;
 
 export const Card = (props: CardProps) => (
@@ -176,6 +185,7 @@ const Progress = ({ refetch }) => {
   )
 
 }
+
 const Tip = () => {
   const { data: tipSet, isLoading: isfetchingTip, isError: noTip } = useQuery({
     queryKey: ['tip'],
@@ -224,7 +234,6 @@ const Tip = () => {
   )
 }
 
-
 const Domain = ({ label, score }) => {
   const Image = score >= 1 && score <= 22 ? Decreased : score >= 23 && score <= 76 ? Increased : score >= 77 && score <= 100 ? Maintained : "NA"
   return (
@@ -265,6 +274,35 @@ const Wellbeing = () => {
   )
 }
 
+const TipSection = ({ result }: { result: any }) => {
+  return (
+    <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
+      <Stack gap={'lg'}>
+        <Text ta={'center'} size='20px' fw={700}>🌱 Your Holistic Tip for the Week:</Text>
+        <Text>{result.feedback}</Text>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Character: </Text>
+          <Text>{result.character}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Career: </Text>
+          <Text>{result.career}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Connectedness: </Text>
+          <Text>{result.connectedness}</Text>
+        </Stack>
+        <Stack gap={'xs'}>
+          <Text fw={700}>Contentment: </Text>
+          <Text>{result.contentment}</Text>
+        </Stack>
+
+        <Text fs={'italic'}>"{result.quote}"</Text>
+      </Stack>
+    </Box>
+  )
+}
+
 
 const MyWellBePage = () => {
   const { data: holisticTip, isLoading: isFetchingHolistic, isError: noHolisticTip, refetch: refetchHolistic } = useQuery({
@@ -292,15 +330,13 @@ const MyWellBePage = () => {
       </Format >
     )
   }
+
+  const { insight } = holisticTip
+
   return (
     <Format>
       <Stack gap="md" my={'md'}>
-        <Box style={{ borderRadius: 14, background: "linear-gradient(to right, rgba(0, 0, 200, 0.1), rgba(200, 0, 0, 0.1))" }} p='md'>
-          <Stack>
-            <Text ta={'center'} size='20px' fw={700}>🌱 Your Holistic Tip for the Week:</Text>
-            <Text>{holisticTip.advice}</Text>
-          </Stack>
-        </Box>
+        <TipSection result={insight} />
         <Box px={'38px'} py="24px" w='100%'>
           <Wellbeing />
         </Box>
