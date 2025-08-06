@@ -1,6 +1,4 @@
 import { createContext, useState, PropsWithChildren, useEffect } from "react";
-import { auth } from "../api/firebaseServices/firebaseConfig";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { Stack } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -107,8 +105,6 @@ export const Authentication = ({ children }: PropsWithChildren<{}>) => {
         }
         if (token && EXCLUDED_PATHS.includes(location.pathname)) navigate('/')
     })
-
-    console.log(userInfo)
 
     return (
         <AuthenticationContext.Provider value={{ token, login, logout, userRegister, userInfo }}>
