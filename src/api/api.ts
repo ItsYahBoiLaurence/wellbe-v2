@@ -1,6 +1,4 @@
 import axios from "axios";
-import { signOut } from "firebase/auth";
-import { auth } from "./firebaseServices/firebaseConfig";
 import queryClient from "../queryClient";
 
 const api = axios.create({
@@ -25,17 +23,12 @@ api.interceptors.request.use(
     }
 )
 
-const handleLogout = async () => {
-    await signOut(auth)
-}
-
 api.interceptors.response.use(
     response => response,
     error => {
         if (error.response && error.response.status === 401) {
             queryClient.clear()
             localStorage.clear()
-            handleLogout()
         }
         return Promise.reject(error)
     }
