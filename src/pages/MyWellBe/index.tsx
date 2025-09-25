@@ -5,7 +5,6 @@ import {
   ElementProps,
   Image,
   Text,
-  Title,
   RingProgress,
   Flex,
   Button,
@@ -15,7 +14,6 @@ import {
   Avatar,
   Center,
   Group,
-  List,
 } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
@@ -237,18 +235,22 @@ const Tip = () => {
 const Domain = ({ label, score }) => {
   const Image = score >= 1 && score <= 22 ? Decreased : score >= 23 && score <= 76 ? Increased : score >= 77 && score <= 100 ? Maintained : "NA"
   return (
-    <Center>
-      <Box w={'100%'}>
-        <Stack justify='start' gap={'sm'} >
-          <Avatar src={Image} size={'lg'} radius={'none'}>
-            {Image}
-          </Avatar>
-          <Text>{label}</Text>
-          <Text size={'xl'} fw={700}>{score}%</Text>
-        </Stack>
-      </Box>
-    </Center >
+    <></>
   )
+}
+
+type ScoreBand = "High" | "Above Average" | "Average" | "Below Average" | "Low"
+
+function ScoreBandToImage(scoreband: ScoreBand) {
+  const image: Record<ScoreBand, string> = {
+    "High": Increased,
+    "Above Average": Increased,
+    "Average": Maintained,
+    "Below Average": Decreased,
+    "Low": Decreased
+  }
+
+  return image[scoreband]
 }
 
 const Wellbeing = () => {
@@ -264,12 +266,26 @@ const Wellbeing = () => {
 
   if (noWellbeingData) return <Text ta={'center'}>No data!</Text>
 
+  console.log(wellbeing)
+
+
   return (
     <SimpleGrid cols={2} spacing={'lg'}>
-      <Domain label={'Character'} score={wellbeing.character} />
-      <Domain label={'Career'} score={wellbeing.career} />
-      <Domain label={'Contentment'} score={wellbeing.contentment} />
-      <Domain label={'Connectedness'} score={wellbeing.connectedness} />
+      {wellbeing.map(({ scoreband, score, domain }) => {
+        return (
+          <Center>
+            <Box w={'100%'}>
+              <Stack justify='start' gap={'sm'} >
+                <Avatar src={ScoreBandToImage(scoreband)} size={'lg'} radius={'none'}>
+
+                </Avatar>
+                <Text tt={'capitalize'}>{domain}</Text>
+                <Text size={'xl'} fw={700}>{score}%</Text>
+              </Stack>
+            </Box>
+          </Center >
+        )
+      })}
     </SimpleGrid>
   )
 }
