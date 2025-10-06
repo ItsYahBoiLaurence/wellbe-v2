@@ -61,7 +61,7 @@ export default function OnBoardingScreen() {
                                     </Stack>
                                     <Stack align="center" ta={'center'}>
                                         <Text size="xl" fw={700} c={'#6B4EFF'}>Quick Check</Text>
-                                        <Text>You'll receive short survets called <span style={{ fontWeight: 700 }}>Quick Checks</span> each one takes just a few moments to answer. They help us understand how you're doing so we can support your wellbeing.</Text>
+                                        <Text>You'll receive short surveys called <span style={{ fontWeight: 700 }}>Quick Checks</span> each one takes just a few moments to answer. They help us understand how you're doing so we can support your wellbeing.</Text>
                                     </Stack>
                                 </Stack>
                             </Center>
