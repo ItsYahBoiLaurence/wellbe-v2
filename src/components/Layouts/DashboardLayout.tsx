@@ -1,13 +1,14 @@
-import { AppShell, Box, Center, Stack, Tabs, Title, Text } from '@mantine/core';
+import { AppShell, Box, Center, Stack, Tabs, Title, Text, Flex } from '@mantine/core';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import AppLogo from '../../assets/logo.svg';
 import { useMediaQuery } from '@mantine/hooks';
+import { IconMoodHeart, IconUser, IconHome, IconMail } from '@tabler/icons-react';
 
 const ROUTES = [
-  { route: '/', label: 'Home' },
-  { route: '/my-wellbe', label: 'My Wellbe' },
-  { route: '/inbox', label: 'Inbox' },
-  { route: '/profile', label: 'Profile' },
+  { route: '/', label: 'Home', icon: <IconHome size={20} /> },
+  { route: '/my-wellbe', label: 'My Wellbe', icon: <IconMoodHeart size={20} /> },
+  { route: '/inbox', label: 'Inbox', icon: <IconMail size={20} /> },
+  { route: '/profile', label: 'Profile', icon: <IconUser size={20} /> },
 ];
 
 const Mobile = () => {
@@ -84,13 +85,15 @@ const Mobile = () => {
               <Tabs.Tab
                 key={r.route}
                 value={r.route}
-                style={(t) => ({
-                  color: t.colors.gray[7],
+                style={{
+                  color: 'white',
                   border: 'none',
                   borderRadius: 0,
-                })}
+                }}
               >
-                {r.label}
+                <Flex align={'center'} gap={4}>
+                  {r.icon}{r.label}
+                </Flex>
               </Tabs.Tab>
             ))}
           </Tabs.List>
