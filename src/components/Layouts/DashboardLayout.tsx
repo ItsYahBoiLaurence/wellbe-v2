@@ -1,7 +1,5 @@
 import { AppShell, Box, Center, Stack, Tabs, Title, Text, Flex } from '@mantine/core';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import AppLogo from '../../assets/logo.svg';
-import { useMediaQuery } from '@mantine/hooks';
 import { IconMoodHeart, IconUser, IconHome, IconMail } from '@tabler/icons-react';
 
 const ROUTES = [
