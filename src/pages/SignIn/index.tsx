@@ -106,6 +106,9 @@ const SignInPage = () => {
           >
             Log in
           </PrimaryButton>
+          <Link to="/forgot-password">
+            <Text ta={'center'}>Forgot Password?</Text>
+          </Link>
         </Box>
       </Box>
     </Box>

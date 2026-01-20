@@ -1,12 +1,14 @@
-import { Avatar, Badge, Box, Button, Center, Container, Group, List, Stack, Text } from '@mantine/core';
+import { ActionIcon, Avatar, Badge, Box, Button, Center, Container, Flex, Group, List, Stack, Text } from '@mantine/core';
 import GetStartedOverlay from '../../assets/getstarted-gradient-overlay.png';
 import { PrimaryButton } from '../../components/Buttons/Buttons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ORANGEBG from '../../assets/forest.jpg'
 import { useQuery } from '@tanstack/react-query';
 import api from '../../api/api';
 import TimeNote from '../../assets/timenote.svg'
 import { IconAlertTriangle } from '@tabler/icons-react';
+import { IconQuestionMark } from '@tabler/icons-react';
+import AppLogo from '../../assets/logo.svg';
 
 interface HomeData {
   check_in_count: number,
@@ -111,6 +113,8 @@ const CheckInCard = (
 
 const HomePage = () => {
 
+  const navigate = useNavigate()
+
   const { data, isError, isLoading } = useQuery<HomeData>({
     queryKey: ['check-in-status'],
     queryFn: async () => {
@@ -131,6 +135,7 @@ const HomePage = () => {
   console.log(userCheckInStatus)
 
   return (
+
     <Box
       style={(t) => ({
         height: '100%',
@@ -144,6 +149,7 @@ const HomePage = () => {
         },
       })}
     >
+
       <Box
         style={{
           width: '100%',
@@ -154,51 +160,67 @@ const HomePage = () => {
           backgroundRepeat: 'no-repeat',
         }}
       >
+
         <Box w={'100%'} h={'100%'} bg={'linear-gradient(180deg,rgba(225, 230, 233, 1) 15%, rgba(255, 255, 255, 0.2) 100%)'}>
           <Container
             style={{
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              paddingTop: 58,
-              paddingBottom: 58,
               height: '100%',
+              gap: '28px'
             }}
           >
+            <Group flex={0.2} justify='center' pos={'relative'}>
+              <img src={AppLogo} width={200} />
+              <ActionIcon
+                onClick={() => navigate('/on-boarding')}
+                style={{ width: '12px', height: '12px', borderRadius: '100%', borderBottomLeftRadius: '0', position: 'absolute', top: "50%", right: 0, transform: 'translateY(-50%)' }}
+                color={'violet'}
+                c={"white"}
+              >
+                <IconQuestionMark size={12} />
+              </ActionIcon>
+            </Group>
 
-            <Stack align='center' gap={'xl'}>
-              <Text size={'xl'} fw={700}> Your Wellbeing Check-In</Text>
-              <CheckInCard data={data} />
-            </Stack>
+            <Box flex={0.8} h={'100%'} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexDirection: 'column',
+              paddingBottom: '20px'
+            }}>
+              <Stack align='center' gap={'xl'}>
+                <Text size={'xl'} fw={700}> Your Wellbeing Check-In</Text>
+                <CheckInCard data={data} />
+              </Stack>
 
-            <Box
-              style={{ display: 'flex', justifyContent: 'center', zIndex: 50 }}
-            >
-              {data.has_pending_questions
-                ? (
-                  <>
-                    <Link to={`/survey`}>
-                      <PrimaryButton px={'xxl'}>Start Wellbeing Check in</PrimaryButton>
-                    </Link>
-                  </>
-                )
-                : (
-                  <>
-                    <Link to={`/my-wellbe`}>
-                      <Button
-                        px={'xxl'}
-                        variant={data.user_finished_the_batch ? "filled" : 'white'}
-                        color={data.user_finished_the_batch ? "violet" : undefined}
-                        c={data.user_finished_the_batch ? "white" : 'violet'}
-                      >{data.user_finished_the_batch
-                        ? "View your latest Comprehensive Tip"
-                        : "Check Your Progress"}</Button>
-                    </Link>
-                  </>
-                )
-              }
+              <Box
+                style={{ display: 'flex', justifyContent: 'center', zIndex: 50 }}
+              >
+                {data.has_pending_questions
+                  ? (
+                    <>
+                      <Link to={`/survey`}>
+                        <PrimaryButton px={'xxl'}>Start Wellbeing Check in</PrimaryButton>
+                      </Link>
+                    </>
+                  )
+                  : (
+                    <>
+                      <Link to={`/my-wellbe`}>
+                        <Button
+                          px={'xxl'}
+                          variant={data.user_finished_the_batch ? "filled" : 'white'}
+                          color={data.user_finished_the_batch ? "violet" : undefined}
+                          c={data.user_finished_the_batch ? "white" : 'violet'}
+                        >{data.user_finished_the_batch
+                          ? "View your latest Comprehensive Tip"
+                          : "Check Your Progress"}</Button>
+                      </Link>
+                    </>
+                  )
+                }
+              </Box>
             </Box>
-
           </Container>
         </Box>
 

@@ -7,7 +7,7 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "dev": "vite --port 3400",
+    "dev": "vite --port 3400 --host",
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\" --ignore-path .prettierignore",
